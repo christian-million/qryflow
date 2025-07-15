@@ -1,0 +1,161 @@
+---
+title: "Advanced Usage with qryflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Advanced Usage with qryflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r}
+library(qryflow)
+```
+
+# Overview
+
+While `qryflow()` provides a simple interface for running tagged SQL workflows, advanced users may want more control over how scripts are parsed, executed, and inspected. This vignette demonstrates how to work with the lower-level building blocks of `qryflow`:
+
+- `qryflow_run()`: End-to-end parser + executor
+
+- `qryflow_results()`: Extract only the query results
+
+- `qryflow_parse()`: Split SQL into structured chunks
+
+- `qryflow_execute()`: Execute parsed chunks manually
+
+- Internal object structures: `qryflow_chunk`, `qryflow_workflow`, `qryflow_result`
+
+# Using `qryflow_run()` and `qryflow_results()`
+
+The function `qryflow_run()` performs parsing **and** execution of a SQL workflow, returning a structured list (of class `qryflow_result`). Unlike `qryflow()`, it includes all chunk metadata (not just query results).
+
+```{r}
+con <- example_db_connect(mtcars)
+path <- example_sql_path("mtcars.sql")
+
+obj <- qryflow_run(path, con)
+
+# A qryflow_result object
+class(obj)
+names(obj)
+
+# Each element is a qryflow_chunk
+class(obj$df_mtcars)
+```
+
+To extract only the query results (i.e., what would be returned by `qryflow()`), use:
+
+```{r}
+results <- qryflow_results(obj)
+head(results$df_mtcars)
+```
+
+By default, all query chunks are returned as a named list. Set `simplify = TRUE` to return a single result if only one chunk is present.
+
+# Parsing and Executing Separately
+
+For advanced introspection, you can manually parse and execute SQL chunks.
+
+## Step 1: Parse a script
+
+```{r}
+workflow <- qryflow_parse(path)
+
+class(workflow)
+length(workflow$chunks)
+workflow$chunks[[1]]
+```
+
+Each chunk is a structured object of class `qryflow_chunk`, containing:
+
+- `type` (e.g., `"query"`)
+
+- `name` (e.g., `"df_mtcars"`)
+
+- `sql` (the SQL code)
+
+- `tags` (any additional tags)
+
+
+## Step 2: Execute the workflow
+
+```{r}
+executed <- qryflow_execute(workflow, con, source = "mtcars.sql")
+class(executed)
+names(executed)
+```
+
+Execution results are stored inside each chunk object, accessible via `chunk$results`.
+
+# Inspecting `qryflow_result` objects
+
+The result from `qryflow_run()` or `qryflow_execute()` is a `qryflow_result`, which behaves like a list of chunks plus metadata.
+
+```{r}
+head(executed$df_mtcars$results)
+executed$df_mtcars$tags
+executed$meta$timings
+executed$meta$source
+```
+
+You can also use:
+
+```{r}
+summary(executed)
+```
+
+# Understanding the Underlying Objects
+
+## `qryflow_chunk`
+
+Created by `new_qryflow_chunk()`. Structure:
+
+```r
+list(
+  type = "query",
+  name = "df_mtcars",
+  sql = "SELECT * FROM mtcars",
+  tags = list(source = "mtcars"),
+  results = data.frame(...)
+)
+```
+
+## `qryflow_workflow`
+
+Created by `qryflow_parse()` - it contains all parsed `qryflow_chunk` objects and optionally the original SQL script (`source`).
+
+```r
+workflow$chunks[[1]]  # Each is a qryflow_chunk
+workflow$source       # Entire original SQL text
+```
+
+## `qryflow_result`
+
+Created by `qryflow_execute()` or `qryflow_run()` - essentially a `qryflow_workflow` plus execution metadata (`meta`) and filled `results`.
+
+```r
+executed$meta$timings
+executed$meta$source
+```
+
+# Summary
+
+Use these tools when you need:
+
+- Direct access to parsed chunks (`qryflow_parse`)
+
+- Programmatic control over execution (`qryflow_execute`)
+
+- Access to timing and SQL source metadata (`qryflow_result`)
+
+- Selective re-execution or filtering of chunks
+
+See the "Extending qryflow" vignette for registering custom chunk types or defining new behaviors.
+
+```{r, echo=FALSE, include=FALSE}
+DBI::dbDisconnect(con)
+```

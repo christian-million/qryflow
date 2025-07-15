@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS cyl_6;
+
+CREATE TABLE cyl_6 AS
+SELECT *
+FROM mtcars
+WHERE cyl = 6;
+
+SELECT *
+FROM mtcars;
+
+SELECT *
+FROM cyl_6;
+

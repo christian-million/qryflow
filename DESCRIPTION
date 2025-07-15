@@ -1,0 +1,23 @@
+Package: qryflow
+Title: Execute Multi-Step 'SQL' Workflows
+Version: 0.0.0.9000
+Authors@R: person("Christian", "Million", , "christianmillion93@gmail.com", role = c("aut", "cre", "cph"))
+Description: Framework for executing multi-step 'SQL' workflows by
+    leveraging specially formatted comments to define and control
+    execution. This enables users to mix queries, commands, and metadata
+    within a single script. Results are returned as named objects for use
+    in downstream workflows.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    DBI
+Suggests: 
+    knitr,
+    rmarkdown,
+    RSQLite,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+

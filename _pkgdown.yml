@@ -1,0 +1,57 @@
+url: ~
+template:
+  bootstrap: 5
+
+reference:
+- title: Running and Managing 'SQL' Workflows
+  desc: >
+    Functions for executing multi-step SQL workflows with tagged SQL scripts. These
+    tools let you parse SQL into chunks, control execution, and retrieve structured
+    results.
+  contents:
+  - qryflow
+  - qryflow_run
+  - qryflow_results
+  - qryflow_parse
+  - qryflow_execute
+
+- title: Registration
+  desc: >
+    Functions that allow users to register custom types and inspect the registry.
+    These are useful for extending qryflow.
+  contents:
+  - register_qryflow_type
+  - register_qryflow_parser
+  - register_qryflow_handler
+  - qryflow_parser_exists
+  - qryflow_handler_exists
+  - ls_qryflow_types
+  - ls_qryflow_parsers
+  - ls_qryflow_handlers
+  - validate_qryflow_parser
+  - validate_qryflow_handler
+
+- title: Helpers for Extending qryflow
+  desc: >
+    These functions are exported to help users extend qryflow with custom
+    parsers and handlers.
+  contents:
+  - read_sql_lines
+  - collapse_sql_lines
+  - is_tag_line
+  - extract_all_tags
+  - extract_tag
+  - extract_name
+  - extract_type
+  - subset_tags
+  - new_qryflow_chunk
+  - qryflow_default_type
+
+- title: Example Utilities
+  desc: >
+    These functions help to quickly prepare the environment to demonstrate
+    qryflow functionality. Used in the examples, vignettes, and in the testing
+    suite.
+  contents:
+  - example_db_connect
+  - example_sql_path

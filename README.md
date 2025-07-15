@@ -5,6 +5,9 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/christian-million/qryflow/graph/badge.svg)](https://app.codecov.io/gh/christian-million/qryflow)
 <!-- badges: end -->
 
 ## Overview

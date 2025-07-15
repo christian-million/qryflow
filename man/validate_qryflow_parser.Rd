@@ -19,13 +19,11 @@ the arguments "x" and "..." - in that order. This is to help ensure users
 only register valid parsers.
 }
 \examples{
-
 custom_func <- function(x, ...){
 
   # Parsing Code Goes Here
 
 }
-
 validate_qryflow_parser(custom_func)
 }
 \seealso{

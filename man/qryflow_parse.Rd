@@ -22,8 +22,6 @@ This function is used internally by \code{\link[=qryflow_run]{qryflow_run()}}, b
 preprocess or inspect the structure of a SQL workflow.
 }
 \examples{
-library(qryflow)
-
 filepath <- example_sql_path("mtcars.sql")
 
 parsed <- qryflow_parse(filepath)

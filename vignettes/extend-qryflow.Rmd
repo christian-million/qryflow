@@ -22,7 +22,7 @@ library(qryflow)
 
 `qryflow` was designed to be easily extended and allows users to define custom chunk types. This vignette provides relevant background knowledge on how `qryflow` works under the hood, then walks through how to create and register custom chunk types.
 
-This vignette assumes the knowledge found in the "Getting Started" and "Advanced Usage" vignettes.
+This vignette assumes the knowledge found in the "Getting Started" (`vignette("getting-started", package = "qryflow")`) and "Advanced Usage" (`vignette("advanced-qryflow", package = "qryflow")`) vignettes.
 
 # Big Picture: How `qryflow` Works
 

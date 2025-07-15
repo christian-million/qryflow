@@ -9,6 +9,9 @@ is_tag_line(line)
 \arguments{
 \item{line}{A character vector to check. It is a vectorized function.}
 }
+\value{
+Logical. Indicating whether each line matches tag specification.
+}
 \description{
 Checks whether a specially structured comment line if formatted in the way that
 qryflow expects.

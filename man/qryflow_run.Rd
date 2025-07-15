@@ -25,8 +25,6 @@ This function is typically used internally by \code{\link[=qryflow]{qryflow()}},
 for more control over workflow execution.
 }
 \examples{
-library(qryflow)
-
 con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")

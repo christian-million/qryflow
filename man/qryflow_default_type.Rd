@@ -18,7 +18,6 @@ Retrieves the value from the option \code{qryflow.default.type}, if set. Otherwi
 to the function, it returns that value.
 }
 \examples{
-
 x <- getOption("qryflow.default.type", "query")
 
 y <- qryflow_default_type()

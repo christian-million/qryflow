@@ -22,8 +22,6 @@ A named list of query results, or a single result object if \code{simplify = TRU
 typically one that includes parsed and executed SQL chunks.
 }
 \examples{
-library(qryflow)
-
 con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")

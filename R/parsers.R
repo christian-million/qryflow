@@ -65,13 +65,11 @@ ls_qryflow_parsers <- function() {
 #' criteria.
 #'
 #' @examples
-#'
 #' custom_func <- function(x, ...){
 #'
 #'   # Parsing Code Goes Here
 #'
 #' }
-#'
 #' validate_qryflow_parser(custom_func)
 #' @seealso [validate_qryflow_handler()] for the handler equivalent.
 #' @export

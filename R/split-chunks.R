@@ -11,7 +11,7 @@ parse_qryflow_chunks_ <- function(sql){
   split_chunks <- split_qryflow_chunks(sql)
   typed_chunks <- parse_qryflow_types(split_chunks)
 
-  chunks <- list()
+  chunks <- vector("list", length(typed_chunks))
 
   for (i in seq_along(typed_chunks)) {
     chunks[[i]] <- qryflow_parse_chunk(typed_chunks[[i]])
@@ -55,7 +55,7 @@ split_qryflow_chunks <- function(lines) {
   # Calculate end points of chunks
   chunk_ends <- c(chunk_starts[-1] - 1, length(lines))
 
-  chunks <- list()
+  chunks <- vector("list", length(chunk_starts))
 
   for (j in seq_along(chunk_starts)) {
     start <- chunk_starts[j]
@@ -72,7 +72,7 @@ split_qryflow_chunks <- function(lines) {
 # It should return a list of chunks (type, text)
 parse_qryflow_types <- function(raw_chunks){
 
-  unparsed_chunks <- list()
+  unparsed_chunks <- vector("list", length(raw_chunks))
 
   for (i in seq_along(raw_chunks)) {
 

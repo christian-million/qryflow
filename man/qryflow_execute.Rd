@@ -27,8 +27,6 @@ This function is used internally by \code{\link[=qryflow_run]{qryflow_run()}}, b
 to manually control parsing and execution.
 }
 \examples{
-library(qryflow)
-
 con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")

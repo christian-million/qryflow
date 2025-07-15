@@ -154,7 +154,7 @@ Use these tools when you need:
 
 - Selective re-execution or filtering of chunks
 
-See the "Extending qryflow" vignette for registering custom chunk types or defining new behaviors.
+See the "Extending qryflow" (`vignette("extend-qryflow", package = "qryflow")`) vignette for registering custom chunk types or defining new behaviors.
 
 ```{r, echo=FALSE, include=FALSE}
 DBI::dbDisconnect(con)

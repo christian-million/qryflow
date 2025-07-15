@@ -60,13 +60,13 @@ register_qryflow_parser <- function(type, parser, overwrite = FALSE) {
 
   p_exists <- qryflow_parser_exists(type)
 
-  if (p_exists && !isTRUE(overwrite)){
+  if (p_exists && !isTRUE(overwrite)) {
 
     stop(paste0("A parser for type '", type,"' is already registered. Use `overwrite = TRUE` to replace it."), call. = FALSE)
 
   }
 
-  .qryflow_parsers[[type]] <- parser
+  assign(type, parser, envir = .qryflow_parsers)
 
   return(TRUE)
 
@@ -81,13 +81,13 @@ register_qryflow_handler <- function(type, handler, overwrite = FALSE) {
 
   h_exists <- qryflow_handler_exists(type)
 
-  if (h_exists && !isTRUE(overwrite)){
+  if (h_exists && !isTRUE(overwrite)) {
 
     stop(paste0("A handler for type '", type, "' is already registered. Use `overwrite = TRUE` to replace it."), call. = FALSE)
 
   }
 
-  .qryflow_handlers[[type]] <- handler
+  assign(type, handler, envir = .qryflow_handlers)
 
   return(TRUE)
 

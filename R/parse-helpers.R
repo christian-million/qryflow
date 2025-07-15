@@ -12,6 +12,8 @@
 #'
 #' @param line A character vector to check. It is a vectorized function.
 #'
+#' @returns Logical. Indicating whether each line matches tag specification.
+#'
 #' @examples
 #' a <- "-- @query: df_mtcars"
 #' b <- "-- @exec: prep_tbl"
@@ -57,7 +59,7 @@ is_tag_line <- function(line){
 #' @param keep A character vector of tag names to keep or exclude in `subset_tags()`.
 #' @param negate Logical; if `TRUE`, `subset_tags()` returns all tags except those listed in `keep`.
 #'
-#' @return
+#' @returns
 #' - `extract_all_tags()`: A named list of all tags found in the SQL chunk.
 #' - `extract_tag()`, `extract_name()`, `extract_type()`: A single tag value (character or `NULL`).
 #' - `subset_tags()`: A filtered named list of tags or `NULL` if none remain.
@@ -152,11 +154,10 @@ subset_tags <- function(tags, keep, negate = FALSE){
 
   l <- tags[keep_idx]
 
-  if(length(l) == 0){
+  if (length(l) == 0) {
     return(list())
   }
 
   return(l)
 
 }
-

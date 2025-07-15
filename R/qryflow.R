@@ -22,8 +22,6 @@
 #'
 #' @seealso [`qryflow_run()`], [`qryflow_results()`]
 #' @examples
-#' library(qryflow)
-#'
 #' con <- example_db_connect(mtcars)
 #'
 #' filepath <- example_sql_path("mtcars.sql")
@@ -61,8 +59,6 @@ qryflow <- function(sql, con, ..., simplify = TRUE){
 #' @seealso [`qryflow()`], [`qryflow_results()`], [`qryflow_execute()`], [`qryflow_parse()`]
 #'
 #' @examples
-#' library(qryflow)
-#'
 #' con <- example_db_connect(mtcars)
 #'
 #' filepath <- example_sql_path("mtcars.sql")
@@ -102,8 +98,6 @@ qryflow_run <- function(sql, con, ...){
 #' @seealso [`qryflow()`], [`qryflow_run()`]
 #'
 #' @examples
-#' library(qryflow)
-#'
 #' con <- example_db_connect(mtcars)
 #'
 #' filepath <- example_sql_path("mtcars.sql")
@@ -115,6 +109,10 @@ qryflow_run <- function(sql, con, ...){
 #' DBI::dbDisconnect(con)
 #' @export
 qryflow_results <- function(x, ..., simplify = FALSE){
+
+  if (!inherits(x, "qryflow_result")) {
+    stop("`x` is not an object of class `qryflow_result`")
+  }
 
   chunk_idx <- vapply(x, function(x) inherits(x, "qryflow_chunk"), logical(1))
   obj <- x[chunk_idx]
@@ -155,8 +153,6 @@ qryflow_run_ <- function(sql, con, ...){
 #' @seealso [`qryflow()`], [`qryflow_run()`], [`qryflow_execute()`]
 #'
 #' @examples
-#' library(qryflow)
-#'
 #' filepath <- example_sql_path("mtcars.sql")
 #'
 #' parsed <- qryflow_parse(filepath)
@@ -191,8 +187,6 @@ qryflow_parse <- function(sql){
 #' @seealso [`qryflow_run()`], [`qryflow_parse()`]
 #'
 #' @examples
-#' library(qryflow)
-#'
 #' con <- example_db_connect(mtcars)
 #'
 #' filepath <- example_sql_path("mtcars.sql")
@@ -243,7 +237,6 @@ qryflow_execute <- function(x, con, ..., source = NULL){
 #' @returns Character. If set, result from `qryflow.default.type` option, otherwise "query" or value passed to `type`
 #'
 #' @examples
-#'
 #' x <- getOption("qryflow.default.type", "query")
 #'
 #' y <- qryflow_default_type()

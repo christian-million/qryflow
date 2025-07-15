@@ -31,8 +31,6 @@ This is a wrapper around the combination of \code{\link[=qryflow_run]{qryflow_ru
 and \code{\link[=qryflow_results]{qryflow_results()}}, which filters the output of \code{\link[=qryflow_run]{qryflow_run()}} to only include the results of the SQL.
 }
 \examples{
-library(qryflow)
-
 con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")

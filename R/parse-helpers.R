@@ -23,10 +23,8 @@
 #'
 #' is_tag_line(lines)
 #' @export
-is_tag_line <- function(line){
-
+is_tag_line <- function(line) {
   grepl("^\\s*--\\s*@[^:]+:", line)
-
 }
 
 #' Extract tagged metadata from a SQL chunk
@@ -77,8 +75,10 @@ is_tag_line <- function(line){
 #' @seealso [qryflow_parse()], [ls_qryflow_types()], [qryflow_default_type()]
 #'
 #' @export
-extract_all_tags <- function(text, tag_pattern = "^\\s*--\\s*@([^:]+):\\s*(.*)$"){
-
+extract_all_tags <- function(
+  text,
+  tag_pattern = "^\\s*--\\s*@([^:]+):\\s*(.*)$"
+) {
   lines <- read_sql_lines(text)
   taglines <- lines[is_tag_line(lines)]
 
@@ -92,7 +92,7 @@ extract_all_tags <- function(text, tag_pattern = "^\\s*--\\s*@([^:]+):\\s*(.*)$"
   # Extract matches
   matched <- regmatches(taglines, matches)
 
-  df <- as.data.frame(do.call(rbind, matched))[,2:3]
+  df <- as.data.frame(do.call(rbind, matched))[, 2:3]
 
   names(df) <- c("tag", "value")
 
@@ -100,12 +100,11 @@ extract_all_tags <- function(text, tag_pattern = "^\\s*--\\s*@([^:]+):\\s*(.*)$"
   names(l) <- df$tag
 
   return(l)
-
 }
 
 #' @export
 #' @rdname extract_all_tags
-extract_tag <- function(text, tag){
+extract_tag <- function(text, tag) {
   x <- extract_all_tags(text)
 
   x[[tag]]
@@ -113,18 +112,17 @@ extract_tag <- function(text, tag){
 
 #' @export
 #' @rdname extract_all_tags
-extract_name <- function(text){
+extract_name <- function(text) {
   extract_tag(text, "name")
 }
 
 #' @export
 #' @rdname extract_all_tags
-extract_type <- function(text){
+extract_type <- function(text) {
   all_tags <- extract_all_tags(text)
   type <- all_tags[["type"]]
 
   if (is.null(type)) {
-
     registered_types <- ls_qryflow_types()
     tag_names <- names(all_tags)
     implicit_type_idx <- which(tag_names %in% registered_types)[1]
@@ -134,17 +132,14 @@ extract_type <- function(text){
     } else {
       type <- qryflow_default_type()
     }
-
   }
 
   return(type)
-
 }
 
 #' @export
 #' @rdname extract_all_tags
-subset_tags <- function(tags, keep, negate = FALSE){
-
+subset_tags <- function(tags, keep, negate = FALSE) {
   nm <- names(tags)
   keep_idx <- nm %in% keep
 
@@ -159,5 +154,4 @@ subset_tags <- function(tags, keep, negate = FALSE){
   }
 
   return(l)
-
 }

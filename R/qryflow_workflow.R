@@ -1,5 +1,4 @@
 new_qryflow_workflow <- function(chunks = list(), source = NULL) {
-
   stopifnot(all(sapply(chunks, function(x) inherits(x, "qryflow_chunk"))))
 
   structure(
@@ -13,7 +12,6 @@ new_qryflow_workflow <- function(chunks = list(), source = NULL) {
 
 #' @export
 print.qryflow_workflow <- function(x, ...) {
-
   types <- vapply(x$chunks, function(x) x$type, character(1))
   names <- vapply(x$chunks, function(x) x$name, character(1))
 
@@ -29,6 +27,4 @@ print.qryflow_workflow <- function(x, ...) {
   for (i in 1:n) {
     cat(paste0(i, ") ", out[i], "\n"))
   }
-
 }
-

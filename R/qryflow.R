@@ -32,12 +32,10 @@
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow <- function(sql, con, ..., simplify = TRUE){
-
+qryflow <- function(sql, con, ..., simplify = TRUE) {
   x <- qryflow_run(sql, con, ...)
 
   qryflow_results(x, ..., simplify = simplify)
-
 }
 
 #' Parse and execute a tagged SQL workflow
@@ -74,12 +72,10 @@ qryflow <- function(sql, con, ..., simplify = TRUE){
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow_run <- function(sql, con, ...){
-
+qryflow_run <- function(sql, con, ...) {
   obj <- qryflow_run_(sql, con, ...)
 
   obj
-
 }
 
 #' Extract results from a `qryflow_workflow` object
@@ -108,8 +104,7 @@ qryflow_run <- function(sql, con, ...){
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow_results <- function(x, ..., simplify = FALSE){
-
+qryflow_results <- function(x, ..., simplify = FALSE) {
   if (!inherits(x, "qryflow_result")) {
     stop("`x` is not an object of class `qryflow_result`")
   }
@@ -117,18 +112,16 @@ qryflow_results <- function(x, ..., simplify = FALSE){
   chunk_idx <- vapply(x, function(x) inherits(x, "qryflow_chunk"), logical(1))
   obj <- x[chunk_idx]
 
-  res <- lapply(obj, function(x)x$results)
+  res <- lapply(obj, function(x) x$results)
 
   if (simplify && length(res) == 1) {
     res <- res[[1]]
   }
 
   return(res)
-
 }
 
-qryflow_run_ <- function(sql, con, ...){
-
+qryflow_run_ <- function(sql, con, ...) {
   statement <- read_sql_lines(sql)
 
   wf <- qryflow_parse(statement)
@@ -157,14 +150,12 @@ qryflow_run_ <- function(sql, con, ...){
 #'
 #' parsed <- qryflow_parse(filepath)
 #' @export
-qryflow_parse <- function(sql){
-
+qryflow_parse <- function(sql) {
   statement <- read_sql_lines(sql)
 
   chunks <- parse_qryflow_chunks(statement)
 
   new_qryflow_workflow(chunks = chunks, source = collapse_sql_lines(statement))
-
 }
 
 #' Execute a parsed qryflow SQL workflow
@@ -197,32 +188,44 @@ qryflow_parse <- function(sql){
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow_execute <- function(x, con, ..., source = NULL){
-
+qryflow_execute <- function(x, con, ..., source = NULL) {
   timings <- list()
   ttl_start <- Sys.time()
 
   for (chunk in seq_along(x$chunks)) {
-
     # TODO: output to the console to provide user with feedback
     start_time <- Sys.time()
 
-    x$chunks[[chunk]]["results"] <- list(qryflow_handle_chunk(x$chunks[[chunk]], con, ...))
+    x$chunks[[chunk]]["results"] <- list(qryflow_handle_chunk(
+      x$chunks[[chunk]],
+      con,
+      ...
+    ))
 
     end_time <- Sys.time()
 
-    timings[[chunk]] <- list(chunk = x$chunks[[chunk]]$name, start_time = start_time, end_time = end_time)
+    timings[[chunk]] <- list(
+      chunk = x$chunks[[chunk]]$name,
+      start_time = start_time,
+      end_time = end_time
+    )
   }
 
   ttl_end <- Sys.time()
-  timings <- append(timings, list(c(chunk = "overall_qryflow_run",  start_time = ttl_start, end_time = ttl_end)))
+  timings <- append(
+    timings,
+    list(c(
+      chunk = "overall_qryflow_run",
+      start_time = ttl_start,
+      end_time = ttl_end
+    ))
+  )
   df_time <- as.data.frame(do.call(rbind, timings), stringsAsFactors = FALSE)
 
   out <- do.call(new_qryflow_result, x$chunks)
   out[["meta"]] <- list(timings = df_time, source = source)
 
   return(out)
-
 }
 
 #' Access the default qryflow chunk type
@@ -243,8 +246,8 @@ qryflow_execute <- function(x, con, ..., source = NULL){
 #'
 #' identical(x, y)
 #' @export
-qryflow_default_type <- function(type = getOption("qryflow.default.type", "query")){
-
+qryflow_default_type <- function(
+  type = getOption("qryflow.default.type", "query")
+) {
   return(type)
-
 }

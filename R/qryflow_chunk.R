@@ -15,8 +15,13 @@
 #' @examples
 #' chunk <- new_qryflow_chunk("query", "df_name", "SELECT * FROM mtcars;")
 #' @export
-new_qryflow_chunk <- function(type = character(), name = character(), sql = character(), tags = NULL, results = NULL){
-
+new_qryflow_chunk <- function(
+  type = character(),
+  name = character(),
+  sql = character(),
+  tags = NULL,
+  results = NULL
+) {
   x <- list(
     type = type,
     name = name,
@@ -29,32 +34,24 @@ new_qryflow_chunk <- function(type = character(), name = character(), sql = char
 }
 
 #' @export
-print.qryflow_chunk <- function(x, ...){
-
+print.qryflow_chunk <- function(x, ...) {
   cat(paste0("<qryflow_chunk> ", x$name, "\n\n"))
   cat(paste0("[", x$type, "]\n"))
-  if(length(x$tags) > 0){
+  if (length(x$tags) > 0) {
     cat("tags:", paste0(x$tags, collapse = ", "))
     cat("\n")
   }
   cat("\n")
   cat(substr(x$sql, 1, 100), "...\n")
-
 }
 
 #' @export
-as.list.qryflow_chunk <- function(x, ...){
-
+as.list.qryflow_chunk <- function(x, ...) {
   unclass(x)
-
 }
 
 #' @export
-as.data.frame.qryflow_chunk <- function(x, ...){
-
+as.data.frame.qryflow_chunk <- function(x, ...) {
   l <- as.list(x)
   as.data.frame(l, ...)
-
 }
-
-

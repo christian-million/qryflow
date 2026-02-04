@@ -25,7 +25,7 @@
 #' lines <- c("SELECT *", "FROM mtcars;")
 #' read_sql_lines(lines)
 #' @export
-read_sql_lines <- function(x){
+read_sql_lines <- function(x) {
   UseMethod("read_sql_lines")
 }
 
@@ -46,19 +46,16 @@ read_sql_lines <- function(x){
 #'
 #' sql <- collapse_sql_lines(lines)
 #' @export
-collapse_sql_lines <- function(x){
-
+collapse_sql_lines <- function(x) {
   paste0(x, collapse = "\n")
-
 }
 
-qryflow_sql <- function(x){
+qryflow_sql <- function(x) {
   structure(x, class = "qryflow_sql")
 }
 
 #' @export
-read_sql_lines.character <- function(x){
-
+read_sql_lines.character <- function(x) {
   is_file <- length(x) == 1 && file.exists(x[1])
 
   if (is_file) {
@@ -81,21 +78,18 @@ read_sql_lines.character <- function(x){
 }
 
 #' @export
-read_sql_lines.qryflow_sql <- function(x){
+read_sql_lines.qryflow_sql <- function(x) {
   x
 }
 
 #' @export
-as.character.qryflow_sql <- function(x, ...){
+as.character.qryflow_sql <- function(x, ...) {
   collapse_sql_lines(x)
 }
 
 #' @export
-print.qryflow_sql <- function(x, ...){
-
+print.qryflow_sql <- function(x, ...) {
   cat("<qryflow_sql>\n")
   out <- collapse_sql_lines(x)
   cat(out)
-
 }
-

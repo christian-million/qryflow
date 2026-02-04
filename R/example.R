@@ -18,11 +18,10 @@
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-example_db_connect <- function(df = NULL){
-
+example_db_connect <- function(df = NULL) {
   con <- DBI::dbConnect(RSQLite::SQLite(), dbname = ":memory:")
 
-  if(!is.null(df)) {
+  if (!is.null(df)) {
     nm <- deparse(substitute(df))
     DBI::dbWriteTable(con, nm, df)
   }
@@ -46,9 +45,6 @@ example_db_connect <- function(df = NULL){
 #'
 #' file.exists(path)
 #' @export
-example_sql_path <- function(path = "mtcars.sql"){
-
+example_sql_path <- function(path = "mtcars.sql") {
   system.file("sql", path, package = "qryflow", mustWork = TRUE)
-
 }
-

@@ -1,12 +1,10 @@
-new_qryflow_result <- function(..., meta = NULL){
-
+new_qryflow_result <- function(..., meta = NULL) {
   x <- list(
     ...,
     meta = meta
   )
 
   structure(x, class = "qryflow_result")
-
 }
 
 #' @export
@@ -16,7 +14,6 @@ print.qryflow_result <- function(x, ...) {
   cat("<qryflow_result>:\n")
   cat("Chunks executed:", length(x) - 1, "\n")
   cat("Available objects:", paste(names(x), collapse = ", "), "\n")
-
 }
 
 #' @export
@@ -29,5 +26,3 @@ summary.qryflow_result <- function(object, ...) {
 
   invisible(object)
 }
-
-

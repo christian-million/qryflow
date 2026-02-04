@@ -10,4 +10,3 @@ library(testthat)
 library(qryflow)
 
 test_check("qryflow")
-

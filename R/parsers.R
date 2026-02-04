@@ -1,7 +1,6 @@
 .qryflow_parsers <- new.env(parent = emptyenv())
 
 qryflow_parse_chunk <- function(chunk) {
-
   parser <- get_qryflow_parser(chunk$type)
 
   if (is.null(parser)) {
@@ -9,11 +8,9 @@ qryflow_parse_chunk <- function(chunk) {
   }
 
   parser(chunk$text)
-
 }
 
 get_qryflow_parser <- function(type) {
-
   cat(names(type))
   parser <- get(type, envir = .qryflow_parsers)
 
@@ -22,7 +19,6 @@ get_qryflow_parser <- function(type) {
   }
 
   parser
-
 }
 
 #' Check existence of a given parser in the registry
@@ -39,17 +35,13 @@ get_qryflow_parser <- function(type) {
 #' @seealso [qryflow_handler_exists()] for the handler equivalent.
 #' @export
 qryflow_parser_exists <- function(type) {
-
   exists(type, envir = .qryflow_parsers, inherits = FALSE)
-
 }
 
 #' @export
 #' @rdname ls_qryflow_types
 ls_qryflow_parsers <- function() {
-
   ls(.qryflow_parsers)
-
 }
 
 #' Ensure correct parser structure
@@ -73,8 +65,7 @@ ls_qryflow_parsers <- function() {
 #' validate_qryflow_parser(custom_func)
 #' @seealso [validate_qryflow_handler()] for the handler equivalent.
 #' @export
-validate_qryflow_parser <- function(parser){
-
+validate_qryflow_parser <- function(parser) {
   if (!is.function(parser)) {
     stop("Parser must be a function.")
   }
@@ -87,4 +78,3 @@ validate_qryflow_parser <- function(parser){
 
   invisible(TRUE)
 }
-

@@ -1,7 +1,6 @@
 .qryflow_handlers <- new.env(parent = emptyenv())
 
 qryflow_handle_chunk <- function(chunk, con, ...) {
-
   handler <- get_qryflow_handler(chunk$type)
 
   if (is.null(handler)) {
@@ -9,11 +8,9 @@ qryflow_handle_chunk <- function(chunk, con, ...) {
   }
 
   handler(chunk, con, ...)
-
 }
 
 get_qryflow_handler <- function(type) {
-
   handler <- get(type, envir = .qryflow_handlers)
 
   if (is.null(handler)) {
@@ -21,7 +18,6 @@ get_qryflow_handler <- function(type) {
   }
 
   handler
-
 }
 
 #' Check existence of a given handler in the registry
@@ -38,17 +34,13 @@ get_qryflow_handler <- function(type) {
 #' @seealso [qryflow_parser_exists()] for the parser equivalent.
 #' @export
 qryflow_handler_exists <- function(type) {
-
   exists(type, envir = .qryflow_handlers, inherits = FALSE)
-
 }
 
 #' @export
 #' @rdname ls_qryflow_types
 ls_qryflow_handlers <- function() {
-
   ls(.qryflow_handlers)
-
 }
 
 #' Ensure correct handler structure
@@ -73,8 +65,7 @@ ls_qryflow_handlers <- function() {
 #' validate_qryflow_handler(custom_func)
 #' @seealso [validate_qryflow_parser()] for the parser equivalent.
 #' @export
-validate_qryflow_handler <- function(handler){
-
+validate_qryflow_handler <- function(handler) {
   if (!is.function(handler)) {
     stop("Handler must be a function.")
   }
@@ -87,4 +78,3 @@ validate_qryflow_handler <- function(handler){
 
   invisible(TRUE)
 }
-

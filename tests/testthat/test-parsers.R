@@ -8,12 +8,12 @@ test_that("ls_qryflow_parsers() returns supported types", {
 })
 
 test_that("validate_qryflow_parser() passes valid function", {
-  x <- function(x, ...){}
+  x <- function(x, ...) {}
   expect_true(validate_qryflow_parser(x))
 })
 
 test_that("validate_qryflow_parser() errors on improper order", {
-  x <- function(..., x){}
+  x <- function(..., x) {}
   expect_error(validate_qryflow_parser(x))
 })
 

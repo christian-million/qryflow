@@ -43,7 +43,7 @@ custom_parser <- function(x, ...){
 }
 
 # Create custom handler #####
-custom_handler <- function(chunk, con, ...){
+custom_handler <- function(con, chunk, ...){
   # Custom execution code will go here...
   # return(result)
 }

@@ -37,7 +37,7 @@ The function `qryflow_run()` performs parsing **and** execution of a SQL workflo
 con <- example_db_connect(mtcars)
 path <- example_sql_path("mtcars.sql")
 
-obj <- qryflow_run(path, con)
+obj <- qryflow_run(con, path)
 
 # A qryflow_result object
 class(obj)
@@ -84,7 +84,7 @@ Each chunk is a structured object of class `qryflow_chunk`, containing:
 ## Step 2: Execute the workflow
 
 ```{r}
-executed <- qryflow_execute(workflow, con, source = "mtcars.sql")
+executed <- qryflow_execute(con, workflow, source = "mtcars.sql")
 class(executed)
 names(executed)
 ```

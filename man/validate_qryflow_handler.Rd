@@ -19,7 +19,7 @@ the arguments "chunk", "con, and "..." - in that order. This is to help ensure u
 only register valid handlers.
 }
 \examples{
-custom_func <- function(chunk, con, ...){
+custom_func <- function(con, chunk, ...){
 
   # Parsing Code Goes Here
 

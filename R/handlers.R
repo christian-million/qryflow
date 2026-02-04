@@ -1,13 +1,13 @@
 .qryflow_handlers <- new.env(parent = emptyenv())
 
-qryflow_handle_chunk <- function(chunk, con, ...) {
+qryflow_handle_chunk <- function(con, chunk, ...) {
   handler <- get_qryflow_handler(chunk$type)
 
   if (is.null(handler)) {
     stop(paste0("No handler registered for chunk type '", chunk$type, "'"))
   }
 
-  handler(chunk, con, ...)
+  handler(con, chunk, ...)
 }
 
 get_qryflow_handler <- function(type) {
@@ -56,7 +56,7 @@ ls_qryflow_handlers <- function() {
 #' criteria.
 #'
 #' @examples
-#' custom_func <- function(chunk, con, ...){
+#' custom_func <- function(con, chunk, ...){
 #'
 #'   # Parsing Code Goes Here
 #'
@@ -72,7 +72,7 @@ validate_qryflow_handler <- function(handler) {
 
   f_args <- names(formals(handler))
 
-  if (!identical(f_args, c("chunk", "con", "..."))) {
+  if (!identical(f_args, c("con", "chunk", "..."))) {
     stop("Handler must have arguments 'chunk', 'con', '...' in that order.")
   }
 

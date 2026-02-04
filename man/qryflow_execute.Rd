@@ -4,12 +4,12 @@
 \alias{qryflow_execute}
 \title{Execute a parsed qryflow SQL workflow}
 \usage{
-qryflow_execute(x, con, ..., source = NULL)
+qryflow_execute(con, x, ..., source = NULL)
 }
 \arguments{
-\item{x}{A parsed qryflow workflow object, typically created by \code{\link[=qryflow_parse]{qryflow_parse()}}}
-
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
+
+\item{x}{A parsed qryflow workflow object, typically created by \code{\link[=qryflow_parse]{qryflow_parse()}}}
 
 \item{...}{Reserved for future use.}
 
@@ -33,7 +33,7 @@ filepath <- example_sql_path("mtcars.sql")
 
 parsed <- qryflow_parse(filepath)
 
-executed <- qryflow_execute(parsed, con, source = filepath)
+executed <- qryflow_execute(con, parsed, source = filepath)
 
 DBI::dbDisconnect(con)
 }

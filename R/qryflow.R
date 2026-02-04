@@ -11,9 +11,8 @@
 #' This is a wrapper around the combination of [`qryflow_run()`], which always provides a list of results and metadata,
 #' and [`qryflow_results()`], which filters the output of [`qryflow_run()`] to only include the results of the SQL.
 #'
-#'
-#' @param sql A file path to a `.sql` workflow or a character string containing SQL code.
 #' @param con A database connection from [DBI::dbConnect()]
+#' @param sql A file path to a `.sql` workflow or a character string containing SQL code.
 #' @param ... Additional arguments passed to [`qryflow_run()`] or [`qryflow_results()`].
 #' @param simplify Logical; if `TRUE` (default), a list of length 1 is simplified to the
 #'   single result object.
@@ -26,14 +25,14 @@
 #'
 #' filepath <- example_sql_path("mtcars.sql")
 #'
-#' results <- qryflow(filepath, con)
+#' results <- qryflow(con, filepath)
 #'
 #' head(results$df_mtcars)
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow <- function(sql, con, ..., simplify = TRUE) {
-  x <- qryflow_run(sql, con, ...)
+qryflow <- function(con, sql, ..., simplify = TRUE) {
+  x <- qryflow_run(con, sql, ...)
 
   qryflow_results(x, ..., simplify = simplify)
 }
@@ -47,8 +46,8 @@ qryflow <- function(sql, con, ..., simplify = TRUE) {
 #' This function is typically used internally by [`qryflow()`], but can also be called directly
 #' for more control over workflow execution.
 #'
-#' @param sql A character string representing either the path to a `.sql` file or raw SQL content.
 #' @param con A database connection from [DBI::dbConnect()]
+#' @param sql A character string representing either the path to a `.sql` file or raw SQL content.
 #' @param ... Additional arguments passed to [`qryflow_execute()`].
 #'
 #' @returns A list representing the evaluated workflow, containing query results, execution metadata,
@@ -61,7 +60,7 @@ qryflow <- function(sql, con, ..., simplify = TRUE) {
 #'
 #' filepath <- example_sql_path("mtcars.sql")
 #'
-#' obj <- qryflow_run(filepath, con)
+#' obj <- qryflow_run(con, filepath)
 #'
 #' obj$df_mtcars$sql
 #' obj$df_mtcars$results
@@ -72,8 +71,8 @@ qryflow <- function(sql, con, ..., simplify = TRUE) {
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow_run <- function(sql, con, ...) {
-  obj <- qryflow_run_(sql, con, ...)
+qryflow_run <- function(con, sql, ...) {
+  obj <- qryflow_run_(con, sql, ...)
 
   obj
 }
@@ -98,7 +97,7 @@ qryflow_run <- function(sql, con, ...) {
 #'
 #' filepath <- example_sql_path("mtcars.sql")
 #'
-#' obj <- qryflow_run(filepath, con)
+#' obj <- qryflow_run(con, filepath)
 #'
 #' results <- qryflow_results(obj)
 #'
@@ -121,11 +120,11 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
   return(res)
 }
 
-qryflow_run_ <- function(sql, con, ...) {
+qryflow_run_ <- function(con, sql, ...) {
   statement <- read_sql_lines(sql)
 
   wf <- qryflow_parse(statement)
-  results <- qryflow_execute(wf, con, ...)
+  results <- qryflow_execute(con, wf, ...)
 
   return(results)
 }
@@ -167,8 +166,8 @@ qryflow_parse <- function(sql) {
 #' This function is used internally by [`qryflow_run()`], but can be called directly in concert with [`qryflow_parse()`] if you want
 #' to manually control parsing and execution.
 #'
-#' @param x A parsed qryflow workflow object, typically created by [`qryflow_parse()`]
 #' @param con A database connection from [DBI::dbConnect()]
+#' @param x A parsed qryflow workflow object, typically created by [`qryflow_parse()`]
 #' @param ... Reserved for future use.
 #' @param source Optional; a character string indicating the source SQL to include in metadata.
 #'
@@ -184,11 +183,11 @@ qryflow_parse <- function(sql) {
 #'
 #' parsed <- qryflow_parse(filepath)
 #'
-#' executed <- qryflow_execute(parsed, con, source = filepath)
+#' executed <- qryflow_execute(con, parsed, source = filepath)
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow_execute <- function(x, con, ..., source = NULL) {
+qryflow_execute <- function(con, x, ..., source = NULL) {
   timings <- list()
   ttl_start <- Sys.time()
 
@@ -197,8 +196,8 @@ qryflow_execute <- function(x, con, ..., source = NULL) {
     start_time <- Sys.time()
 
     x$chunks[[chunk]]["results"] <- list(qryflow_handle_chunk(
-      x$chunks[[chunk]],
       con,
+      x$chunks[[chunk]],
       ...
     ))
 

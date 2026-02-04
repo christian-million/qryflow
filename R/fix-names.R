@@ -1,6 +1,5 @@
 # Accepts a List of Chunks
-fix_chunk_names <- function(x){
-
+fix_chunk_names <- function(x) {
   chunk_names <- vapply(x, name_or_na, character(1))
   missing_idx <- which(is.na(chunk_names))
   any_missing <- length(missing_idx) > 0
@@ -17,19 +16,16 @@ fix_chunk_names <- function(x){
   }
 
   if (any_missing | any_dups) {
-
     # TODO: Only alter previously missing or duplicated
     for (i in seq_along(x)) {
       x[[i]]$name <- chunk_names[i]
     }
-
   }
 
   return(x)
-
 }
 
-name_or_na <- function(x){
+name_or_na <- function(x) {
   nm <- x$name
 
   if (is.null(nm) || is.na(nm)) {
@@ -38,4 +34,3 @@ name_or_na <- function(x){
 
   return(nm)
 }
-

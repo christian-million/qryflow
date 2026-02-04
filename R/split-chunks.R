@@ -1,13 +1,10 @@
-parse_qryflow_chunks <- function(sql){
-
+parse_qryflow_chunks <- function(sql) {
   statement <- read_sql_lines(sql)
 
   parse_qryflow_chunks_(statement)
-
 }
 
-parse_qryflow_chunks_ <- function(sql){
-
+parse_qryflow_chunks_ <- function(sql) {
   split_chunks <- split_qryflow_chunks(sql)
   typed_chunks <- parse_qryflow_types(split_chunks)
 
@@ -19,10 +16,9 @@ parse_qryflow_chunks_ <- function(sql){
 
   out_chunks <- fix_chunk_names(chunks)
 
-  names(out_chunks) <- vapply(out_chunks, function(x)x$name, character(1))
+  names(out_chunks) <- vapply(out_chunks, function(x) x$name, character(1))
 
   return(out_chunks)
-
 }
 
 split_qryflow_chunks <- function(lines) {
@@ -34,16 +30,11 @@ split_qryflow_chunks <- function(lines) {
   in_tag_block <- FALSE
 
   for (i in seq_along(lines)) {
-
     if (tag_lines[i] && !in_tag_block) {
-
       chunk_starts <- c(chunk_starts, i)
       in_tag_block <- TRUE
-
     } else if (!tag_lines[i]) {
-
       in_tag_block <- FALSE
-
     }
   }
 
@@ -65,26 +56,20 @@ split_qryflow_chunks <- function(lines) {
   }
 
   return(chunks)
-
 }
 
 # This function accepts the raw split chunks
 # It should return a list of chunks (type, text)
-parse_qryflow_types <- function(raw_chunks){
-
+parse_qryflow_types <- function(raw_chunks) {
   unparsed_chunks <- vector("list", length(raw_chunks))
 
   for (i in seq_along(raw_chunks)) {
-
     chunk_lines <- read_sql_lines(raw_chunks[[i]])
 
     type <- extract_type(chunk_lines)
 
     unparsed_chunks[[i]] <- list(type = type, text = chunk_lines)
-
   }
 
   return(unparsed_chunks)
-
 }
-

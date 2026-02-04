@@ -8,12 +8,12 @@ test_that("ls_qryflow_handlers() returns supported types", {
 })
 
 test_that("validate_qryflow_handler() passes valid function", {
-  x <- function(chunk, con, ...){}
+  x <- function(chunk, con, ...) {}
   expect_true(validate_qryflow_handler(x))
 })
 
 test_that("validate_qryflow_handler() errors on improper order", {
-  x <- function(con, chunk, ...){}
+  x <- function(con, chunk, ...) {}
   expect_error(validate_qryflow_handler(x))
 })
 

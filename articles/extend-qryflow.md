@@ -54,7 +54,7 @@ and what results they should return.
 
 The parser accepts the unaltered SQL statement of the chunk and should
 return a formal `qryflow_chunk` object. Parsers will only be executed on
-a single chunk at a time. The `sqflow_chunk` object is essentially a
+a single chunk at a time. The `qryflow_chunk` object is essentially a
 list in the form of:
 
 ``` r
@@ -119,7 +119,7 @@ They should execute the SQL as appropriate and then return the result:
 This is the handler for the “exec” type:
 
 ``` r
-qryflow_exec_handler <- function(chunk, con, ...) {
+qryflow_exec_handler <- function(con, chunk, ...) {
   
   # Pass the SQL of the chunk to desired execution strategy
   result <- DBI::dbExecute(con, chunk$sql, ...)
@@ -204,7 +204,6 @@ First, create the parser and handler:
 
 ``` r
 query_send_parser <- function(x, ...) {
-
   # Convert to individual lines
   lines <- read_sql_lines(x)
 
@@ -218,21 +217,29 @@ query_send_parser <- function(x, ...) {
     name <- all_tags[["query-send"]]
   }
 
-  other_tags <- subset_tags(all_tags, c("query-send", "name", "type"), negate = TRUE)
+  other_tags <- subset_tags(
+    all_tags,
+    c("query-send", "name", "type"),
+    negate = TRUE
+  )
 
   sql_txt <- paste0(lines[!is_tag_line(lines)], collapse = "\n")
 
-  new_qryflow_chunk(type = "query-send", name = name, sql = sql_txt, tags = other_tags)
-
+  new_qryflow_chunk(
+    type = "query-send",
+    name = name,
+    sql = sql_txt,
+    tags = other_tags
+  )
 }
 
-query_send_handler <- function(chunk, con, ...){
+query_send_handler <- function(con, chunk, ...) {
   res <- DBI::dbSendQuery(con, chunk$sql, ...)
 
   results <- DBI::dbFetch(res)
-  
+
   DBI::dbClearResult(res)
-  
+
   results
 }
 ```
@@ -259,17 +266,17 @@ ls_qryflow_types()
 And test it out on some SQL:
 
 ``` r
-# Creates an in-memory sqlite database and populates it with an mtcars table, named "mtcars" 
+# Creates an in-memory sqlite database and populates it with an mtcars table, named "mtcars"
 con <- example_db_connect(mtcars)
 
-# Create 
+# Create
 sql <- "
 -- @query-send: df_mtcars
 SELECT *
 FROM mtcars;
 "
 
-results <- qryflow(sql, con)
+results <- qryflow(con, sql)
 
 head(results)
 #>    mpg cyl disp  hp drat    wt  qsec vs am gear carb

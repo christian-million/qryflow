@@ -113,7 +113,7 @@
 <span><span class="st">"</span></span>
 <span></span>
 <span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">sql</span>, <span class="va">con</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
@@ -129,7 +129,7 @@
 <code class="sourceCode R"><span><span class="va">filepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_sql_path.html">example_sql_path</a></span><span class="op">(</span><span class="st">'mtcars.sql'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">filepath</span>, <span class="va">con</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">filepath</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span> <span class="op">|&gt;</span></span>
@@ -158,8 +158,8 @@
 <p>The functionality made available by <code>qryflow</code> exists in other packages. However, the scope and implementation of <code>qryflow</code> makes it distinct enough to justify a unique package.</p>
 <p>I recommend reviewing these other packages to see which works best for your needs. If you feel this list is incomplete, please submit an issue:</p>
 <ul>
-<li>
-<a href="https://CRAN.R-project.org/package=sqlhelper" class="external-link"><code>sqlhelper</code></a> provides comprehensive tools for executing parameterized SQL scripts, managing database connections and configurations, supporting spatial data types, and statement-level control within SQL files.</li>
+<li><p><a href="https://CRAN.R-project.org/package=sqlhelper" class="external-link"><code>sqlhelper</code></a> provides comprehensive tools for executing parameterized SQL scripts, managing database connections and configurations, supporting spatial data types, and statement-level control within SQL files.</p></li>
+<li><p><a href="https://cran.r-project.org/package=SQLove" class="external-link"><code>SQLove</code></a> is ‘a lightweight R package for handling complex SQL scripts including temp tables, multiple queries, etc.’</p></li>
 </ul>
 </div>
 </div>

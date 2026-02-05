@@ -29,7 +29,7 @@ for the parser equivalent.
 ## Examples
 
 ``` r
-custom_func <- function(chunk, con, ...){
+custom_func <- function(con, chunk, ...){
 
   # Parsing Code Goes Here
 

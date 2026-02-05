@@ -12,20 +12,20 @@ execution.
 ## Usage
 
 ``` r
-qryflow_run(sql, con, ...)
+qryflow_run(con, sql, ...)
 ```
 
 ## Arguments
-
-- sql:
-
-  A character string representing either the path to a `.sql` file or
-  raw SQL content.
 
 - con:
 
   A database connection from
   [`DBI::dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html)
+
+- sql:
+
+  A character string representing either the path to a `.sql` file or
+  raw SQL content.
 
 - ...:
 
@@ -52,7 +52,7 @@ con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")
 
-obj <- qryflow_run(filepath, con)
+obj <- qryflow_run(con, filepath)
 
 obj$df_mtcars$sql
 #> [1] "SELECT *\nFROM mtcars;\n"

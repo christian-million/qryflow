@@ -11,20 +11,20 @@ names correspond to the `@query` tags.
 ## Usage
 
 ``` r
-qryflow(sql, con, ..., simplify = TRUE)
+qryflow(con, sql, ..., simplify = TRUE)
 ```
 
 ## Arguments
-
-- sql:
-
-  A file path to a `.sql` workflow or a character string containing SQL
-  code.
 
 - con:
 
   A database connection from
   [`DBI::dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html)
+
+- sql:
+
+  A file path to a `.sql` workflow or a character string containing SQL
+  code.
 
 - ...:
 
@@ -65,7 +65,7 @@ con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")
 
-results <- qryflow(filepath, con)
+results <- qryflow(con, filepath)
 
 head(results$df_mtcars)
 #>    mpg cyl disp  hp drat    wt  qsec vs am gear carb

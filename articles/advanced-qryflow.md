@@ -41,7 +41,7 @@ it includes all chunk metadata (not just query results).
 con <- example_db_connect(mtcars)
 path <- example_sql_path("mtcars.sql")
 
-obj <- qryflow_run(path, con)
+obj <- qryflow_run(con, path)
 
 # A qryflow_result object
 class(obj)
@@ -110,7 +110,7 @@ Each chunk is a structured object of class `qryflow_chunk`, containing:
 ### Step 2: Execute the workflow
 
 ``` r
-executed <- qryflow_execute(workflow, con, source = "mtcars.sql")
+executed <- qryflow_execute(con, workflow, source = "mtcars.sql")
 class(executed)
 #> [1] "qryflow_result"
 names(executed)
@@ -141,12 +141,12 @@ head(executed$df_mtcars$results)
 executed$df_mtcars$tags
 #> list()
 executed$meta$timings
-#>                 chunk       start_time         end_time
-#> 1          drop_cyl_6       1770167177       1770167177
-#> 2          prep_cyl_6       1770167177       1770167177
-#> 3           df_mtcars       1770167177       1770167177
-#> 4            df_cyl_6       1770167177       1770167177
-#> 5 overall_qryflow_run 1770167176.92206 1770167176.92349
+#>                 chunk      start_time         end_time
+#> 1          drop_cyl_6      1770328474       1770328474
+#> 2          prep_cyl_6      1770328474       1770328474
+#> 3           df_mtcars      1770328474       1770328474
+#> 4            df_cyl_6      1770328474       1770328474
+#> 5 overall_qryflow_run 1770328474.0591 1770328474.06079
 executed$meta$source
 #> [1] "mtcars.sql"
 ```

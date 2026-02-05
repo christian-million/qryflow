@@ -14,20 +14,20 @@ if you want to manually control parsing and execution.
 ## Usage
 
 ``` r
-qryflow_execute(x, con, ..., source = NULL)
+qryflow_execute(con, x, ..., source = NULL)
 ```
 
 ## Arguments
-
-- x:
-
-  A parsed qryflow workflow object, typically created by
-  [`qryflow_parse()`](https://christian-million.github.io/qryflow/reference/qryflow_parse.md)
 
 - con:
 
   A database connection from
   [`DBI::dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html)
+
+- x:
+
+  A parsed qryflow workflow object, typically created by
+  [`qryflow_parse()`](https://christian-million.github.io/qryflow/reference/qryflow_parse.md)
 
 - ...:
 
@@ -57,7 +57,7 @@ filepath <- example_sql_path("mtcars.sql")
 
 parsed <- qryflow_parse(filepath)
 
-executed <- qryflow_execute(parsed, con, source = filepath)
+executed <- qryflow_execute(con, parsed, source = filepath)
 
 DBI::dbDisconnect(con)
 ```

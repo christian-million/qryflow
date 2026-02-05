@@ -119,7 +119,7 @@ and what results they should return.</p>
 <p>The parser accepts the unaltered SQL statement of the chunk and
 should return a formal <code>qryflow_chunk</code> object. Parsers will
 only be executed on a single chunk at a time. The
-<code>sqflow_chunk</code> object is essentially a list in the form
+<code>qryflow_chunk</code> object is essentially a list in the form
 of:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -174,7 +174,7 @@ database connection object (e.g., <code><a href="https://dbi.r-dbi.org/reference
 should execute the SQL as appropriate and then return the result:</p>
 <p>This is the handler for the “exec” type:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">qryflow_exec_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">chunk</span>, <span class="va">con</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="va">qryflow_exec_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="co"># Pass the SQL of the chunk to desired execution strategy</span></span>
 <span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span><span class="op">$</span><span class="va">sql</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -250,7 +250,6 @@ calls <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="ex
 <p>First, create the parser and handler:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query_send_parser</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span></span>
 <span>  <span class="co"># Convert to individual lines</span></span>
 <span>  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_sql_lines.html">read_sql_lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
@@ -264,21 +263,29 @@ calls <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="ex
 <span>    <span class="va">name</span> <span class="op">&lt;-</span> <span class="va">all_tags</span><span class="op">[[</span><span class="st">"query-send"</span><span class="op">]</span><span class="op">]</span></span>
 <span>  <span class="op">}</span></span>
 <span></span>
-<span>  <span class="va">other_tags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_all_tags.html">subset_tags</a></span><span class="op">(</span><span class="va">all_tags</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"query-send"</span>, <span class="st">"name"</span>, <span class="st">"type"</span><span class="op">)</span>, negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">other_tags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_all_tags.html">subset_tags</a></span><span class="op">(</span></span>
+<span>    <span class="va">all_tags</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"query-send"</span>, <span class="st">"name"</span>, <span class="st">"type"</span><span class="op">)</span>,</span>
+<span>    negate <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">sql_txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">lines</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/is_tag_line.html">is_tag_line</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="../reference/new_qryflow_chunk.html">new_qryflow_chunk</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"query-send"</span>, name <span class="op">=</span> <span class="va">name</span>, sql <span class="op">=</span> <span class="va">sql_txt</span>, tags <span class="op">=</span> <span class="va">other_tags</span><span class="op">)</span></span>
-<span></span>
+<span>  <span class="fu"><a href="../reference/new_qryflow_chunk.html">new_qryflow_chunk</a></span><span class="op">(</span></span>
+<span>    type <span class="op">=</span> <span class="st">"query-send"</span>,</span>
+<span>    name <span class="op">=</span> <span class="va">name</span>,</span>
+<span>    sql <span class="op">=</span> <span class="va">sql_txt</span>,</span>
+<span>    tags <span class="op">=</span> <span class="va">other_tags</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">query_send_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">chunk</span>, <span class="va">con</span>, <span class="va">...</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">query_send_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span><span class="op">$</span><span class="va">sql</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbClearResult.html" class="external-link">dbClearResult</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
-<span>  </span>
+<span></span>
 <span>  <span class="va">results</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Then, register them:</p>
@@ -296,17 +303,17 @@ calls <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="ex
 <span><span class="co">#&gt; [1] "exec"       "query"      "query-send"</span></span></code></pre></div>
 <p>And test it out on some SQL:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Creates an in-memory sqlite database and populates it with an mtcars table, named "mtcars" </span></span>
+<code class="sourceCode R"><span><span class="co"># Creates an in-memory sqlite database and populates it with an mtcars table, named "mtcars"</span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_db_connect.html">example_db_connect</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create </span></span>
+<span><span class="co"># Create</span></span>
 <span><span class="va">sql</span> <span class="op">&lt;-</span> <span class="st">"</span></span>
 <span><span class="st">-- @query-send: df_mtcars</span></span>
 <span><span class="st">SELECT *</span></span>
 <span><span class="st">FROM mtcars;</span></span>
 <span><span class="st">"</span></span>
 <span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">sql</span>, <span class="va">con</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    mpg cyl disp  hp drat    wt  qsec vs am gear carb</span></span>

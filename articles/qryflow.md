@@ -14,7 +14,7 @@ lets you:
 
 - Control how SQL is executed (e.g.,
   [`DBI::dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html),
-  `dbExecute()`)
+  [`DBI::dbExecute()`](https://dbi.r-dbi.org/reference/dbExecute.html))
 
 - Attach names to results, so they’re returned as named R objects
 
@@ -64,7 +64,7 @@ FROM cyl_6;
 "
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(sql, con)
+results <- qryflow(con, sql)
 
 # Access the results from the chunk named `df_cyl_6`
 head(results$df_cyl_6)
@@ -94,7 +94,7 @@ here’s what happens:
 By default,
 [`qryflow()`](https://christian-million.github.io/qryflow/reference/qryflow.md)
 will return a single data.frame (as opposed to a named list of results)
-if there is only one chunk and the argument `simplify=TRUE`. For
+if there is only one chunk and the argument `simplify = TRUE`. For
 example:
 
 ``` r
@@ -110,7 +110,7 @@ FROM mtcars;
 "
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(sql, con)
+results <- qryflow(con, sql)
 
 # Access the results from the chunk named `df_cyl_6`
 # results$df_cyl_6
@@ -229,11 +229,11 @@ of the script.
 
 - Tagged lines act as markers that start a new chunk.
 
-- All lines following a tag line belong to that chunk until another tag
-  line starts the next chunk.
+- All lines immediately following a tag line belong to that chunk until
+  another tag line starts the next chunk.
 
-- If the script starts without any tags, the entire script is treated as
-  one single chunk.
+- If the script has no tags, the entire script is treated as one single
+  chunk.
 
 - If there’s only one tag somewhere in the script, the script is split
   into two chunks:
@@ -314,7 +314,7 @@ SELECT *
 FROM cyl_6
 ```
 
-- Result - Three chunks, each starting at its respective tag line.
+- Result - Four chunks, each starting at its respective tag line.
 
 - Each chunk is parsed and executed independently in sequence.
 

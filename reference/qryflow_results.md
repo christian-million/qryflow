@@ -44,7 +44,7 @@ con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")
 
-obj <- qryflow_run(filepath, con)
+obj <- qryflow_run(con, filepath)
 
 results <- qryflow_results(obj)
 

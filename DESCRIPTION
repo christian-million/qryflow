@@ -20,6 +20,5 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://christian-million.github.io/qryflow/,
-    https://github.com/christian-million/qryflow
+URL: https://christian-million.github.io/qryflow/, https://github.com/christian-million/qryflow
 BugReports: https://github.com/christian-million/qryflow/issues

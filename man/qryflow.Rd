@@ -4,12 +4,12 @@
 \alias{qryflow}
 \title{Run a multi-step SQL workflow and return query results}
 \usage{
-qryflow(sql, con, ..., simplify = TRUE)
+qryflow(con, sql, ..., simplify = TRUE)
 }
 \arguments{
-\item{sql}{A file path to a \code{.sql} workflow or a character string containing SQL code.}
-
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
+
+\item{sql}{A file path to a \code{.sql} workflow or a character string containing SQL code.}
 
 \item{...}{Additional arguments passed to \code{\link[=qryflow_run]{qryflow_run()}} or \code{\link[=qryflow_results]{qryflow_results()}}.}
 
@@ -35,7 +35,7 @@ con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")
 
-results <- qryflow(filepath, con)
+results <- qryflow(con, filepath)
 
 head(results$df_mtcars)
 

@@ -17,7 +17,7 @@ qryflow_exec_parser <- function(x, ...) {
   new_qryflow_chunk(type = "exec", name = name, sql = sql_txt, tags = tags)
 }
 
-qryflow_exec_handler <- function(chunk, con, ...) {
+qryflow_exec_handler <- function(con, chunk, ...) {
   result <- DBI::dbExecute(con, chunk$sql, ...)
 
   result
@@ -42,7 +42,7 @@ qryflow_query_parser <- function(x, ...) {
   new_qryflow_chunk(type = "query", name = name, sql = sql_txt, tags = tags)
 }
 
-qryflow_query_handler <- function(chunk, con, ...) {
+qryflow_query_handler <- function(con, chunk, ...) {
   result <- DBI::dbGetQuery(con, chunk$sql, ...)
 
   result

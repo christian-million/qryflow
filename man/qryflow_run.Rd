@@ -4,12 +4,12 @@
 \alias{qryflow_run}
 \title{Parse and execute a tagged SQL workflow}
 \usage{
-qryflow_run(sql, con, ...)
+qryflow_run(con, sql, ...)
 }
 \arguments{
-\item{sql}{A character string representing either the path to a \code{.sql} file or raw SQL content.}
-
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
+
+\item{sql}{A character string representing either the path to a \code{.sql} file or raw SQL content.}
 
 \item{...}{Additional arguments passed to \code{\link[=qryflow_execute]{qryflow_execute()}}.}
 }
@@ -29,7 +29,7 @@ con <- example_db_connect(mtcars)
 
 filepath <- example_sql_path("mtcars.sql")
 
-obj <- qryflow_run(filepath, con)
+obj <- qryflow_run(con, filepath)
 
 obj$df_mtcars$sql
 obj$df_mtcars$results

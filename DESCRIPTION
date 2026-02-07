@@ -1,6 +1,6 @@
 Package: qryflow
 Title: Execute Multi-Step 'SQL' Workflows
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R: person("Christian", "Million", , "christianmillion93@gmail.com", role = c("aut", "cre", "cph"))
 Description: Execute multi-step 'SQL' workflows by
     leveraging specially formatted comments to define and control

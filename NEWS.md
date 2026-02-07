@@ -1,3 +1,5 @@
+# qryflow (development version)
+
 # qryflow 0.2.0
 
 * Breaking change: `qryflow()`, `qryflow_run()`, `qryflow_execute()` and internal functions now accept `con` argument first, before the `sql`/`workflow` arguments. This makes the API consistent with DBI and other DB packages, improves ergonomics, and enables method dispatch on connection classes. (#5)

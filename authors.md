@@ -7,15 +7,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/christian-million/qryflow/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/christian-million/qryflow/blob/v0.2.0/DESCRIPTION)
 
 Million C (2026). *qryflow: Execute Multi-Step 'SQL' Workflows*. R
-package version 0.2.0, <https://christian-million.github.io/qryflow/>.
+package version 0.1.0.9000,
+<https://christian-million.github.io/qryflow/>.
 
     @Manual{,
       title = {qryflow: Execute Multi-Step 'SQL' Workflows},
       author = {Christian Million},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.1.0.9000},
       url = {https://christian-million.github.io/qryflow/},
     }

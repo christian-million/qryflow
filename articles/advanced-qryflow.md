@@ -142,11 +142,11 @@ executed$df_mtcars$tags
 #> list()
 executed$meta$timings
 #>                 chunk       start_time         end_time
-#> 1          drop_cyl_6       1770333624       1770333624
-#> 2          prep_cyl_6       1770333624       1770333624
-#> 3           df_mtcars       1770333624       1770333624
-#> 4            df_cyl_6       1770333624       1770333624
-#> 5 overall_qryflow_run 1770333624.09499 1770333624.09643
+#> 1          drop_cyl_6       1770506045       1770506045
+#> 2          prep_cyl_6       1770506045       1770506045
+#> 3           df_mtcars       1770506045       1770506045
+#> 4            df_cyl_6       1770506045       1770506045
+#> 5 overall_qryflow_run 1770506045.19436 1770506045.19596
 executed$meta$source
 #> [1] "mtcars.sql"
 ```

@@ -1,6 +1,8 @@
 # Changelog
 
-## qryflow (development version)
+## qryflow 0.2.0
+
+CRAN release: 2026-02-05
 
 - Breaking change:
   [`qryflow()`](https://christian-million.github.io/qryflow/reference/qryflow.md),

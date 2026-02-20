@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">qryflow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,16 +90,12 @@ follows these steps:</p>
 <ol style="list-style-type: decimal">
 <li><p>Split the SQL script into chunks using tagged comments (e.g.,
 <code>-- @query: name</code>)</p></li>
-<li><p>Identify the type of each chunk</p></li>
-<li><p>Parse each chunk into a structured object using a
-<strong>type-specific parser</strong></p></li>
+<li><p>Parse each chunk, capturing type, name, and other tags</p></li>
 <li><p>Execute each chunk using a <strong>type-specific
 handler</strong></p></li>
 </ol>
 <p>To support a new chunk type, you’ll need to:</p>
 <ul>
-<li><p><strong>Create a parser</strong> — which converts a chunk of raw
-SQL into a structured <code>qryflow_chunk</code> object.</p></li>
 <li><p><strong>Create a handler</strong> — which defines how to execute
 the chunk and return results.</p></li>
 <li><p><strong>Register</strong> your new type with <code>qryflow</code>
@@ -107,73 +103,17 @@ so the package knows how to process it.</p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="creating-parsers-and-handlers">Creating Parsers and Handlers<a class="anchor" aria-label="anchor" href="#creating-parsers-and-handlers"></a>
+<h2 id="creating-handlers">Creating Handlers<a class="anchor" aria-label="anchor" href="#creating-handlers"></a>
 </h2>
-<p>Each chunk type needs to have an associated parser and an associated
-handler. This section outlines what arguments the custom parser and
-handler functions need to accept, what operations they should perform,
-and what results they should return.</p>
-<div class="section level3">
-<h3 id="parsers">Parsers<a class="anchor" aria-label="anchor" href="#parsers"></a>
-</h3>
-<p>The parser accepts the unaltered SQL statement of the chunk and
-should return a formal <code>qryflow_chunk</code> object. Parsers will
-only be executed on a single chunk at a time. The
-<code>qryflow_chunk</code> object is essentially a list in the form
-of:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="va">type</span>,</span>
-<span>  name <span class="op">=</span> <span class="va">name</span>,</span>
-<span>  sql <span class="op">=</span> <span class="va">sql</span>,</span>
-<span>  tags <span class="op">=</span> <span class="va">tags</span>,</span>
-<span>  results <span class="op">=</span> <span class="va">results</span> <span class="co"># Not populated until after execution</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The parser must extract the type, name, main SQL statement, and any
-additional tags. The package provides some helpers to do this. As an
-example, here is what the “exec” type parser looks like, with
-informative comments:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">qryflow_exec_parser</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span></span>
-<span>  <span class="co"># Get a character vector containing each line</span></span>
-<span>  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_sql_lines.html">read_sql_lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Identify any formal qryflow tags</span></span>
-<span>  <span class="va">all_tags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_all_tags.html">extract_all_tags</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Check to see if an explicit name tag exists for the chunk</span></span>
-<span>  <span class="va">name</span> <span class="op">&lt;-</span> <span class="va">all_tags</span><span class="op">$</span><span class="va">name</span></span>
-<span></span>
-<span>  <span class="co"># If an explicit name tag doesn't exist, use the value from the "exec" tag</span></span>
-<span>  <span class="co"># This is how aliases are implemented</span></span>
-<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">name</span> <span class="op">&lt;-</span> <span class="va">all_tags</span><span class="op">[[</span><span class="st">"exec"</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="co"># Find any additional tags beyond alias, name, or type</span></span>
-<span>  <span class="va">tags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_all_tags.html">subset_tags</a></span><span class="op">(</span><span class="va">all_tags</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exec"</span>, <span class="st">"name"</span>, <span class="st">"type"</span><span class="op">)</span>, negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Collapse the SQL into a single character</span></span>
-<span>  <span class="va">sql_txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/collapse_sql_lines.html">collapse_sql_lines</a></span><span class="op">(</span><span class="va">lines</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/is_tag_line.html">is_tag_line</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Return the structured object</span></span>
-<span>  <span class="fu"><a href="../reference/new_qryflow_chunk.html">new_qryflow_chunk</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"exec"</span>, name <span class="op">=</span> <span class="va">name</span>, sql <span class="op">=</span> <span class="va">sql_txt</span>, tags <span class="op">=</span> <span class="va">tags</span><span class="op">)</span></span>
-<span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Note: The package includes helper functions like
-<code><a href="../reference/read_sql_lines.html">read_sql_lines()</a></code>, <code><a href="../reference/extract_all_tags.html">extract_all_tags()</a></code>,
-<code><a href="../reference/extract_all_tags.html">subset_tags()</a></code>, <code><a href="../reference/is_tag_line.html">is_tag_line()</a></code>, and others to
-make parsing easier.</p>
-</div>
-<div class="section level3">
-<h3 id="handlers">Handlers<a class="anchor" aria-label="anchor" href="#handlers"></a>
-</h3>
+<p>Each chunk type needs to have an associated handler. This section
+outlines what arguments the custom handler functions need to accept,
+what operations it should perform, and what results it should
+return.</p>
 <p>Handlers accepts both a <code>qryflow_chunk</code> object and a
 database connection object (e.g., <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">DBI::dbConnect</a></code>). They
 should execute the SQL as appropriate and then return the result:</p>
 <p>This is the handler for the “exec” type:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qryflow_exec_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="co"># Pass the SQL of the chunk to desired execution strategy</span></span>
@@ -182,56 +122,41 @@ should execute the SQL as appropriate and then return the result:</p>
 <span>  <span class="co"># Return the result</span></span>
 <span>  <span class="va">result</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>After a custom parser and handler have been created, they need to be
+<p>After a custom handler has been created, it needs to be
 registered.</p>
-</div>
 <div class="section level3">
-<h3 id="validate-the-parser-and-handler">Validate the Parser and Handler<a class="anchor" aria-label="anchor" href="#validate-the-parser-and-handler"></a>
+<h3 id="validate-the-handler">Validate the Handler<a class="anchor" aria-label="anchor" href="#validate-the-handler"></a>
 </h3>
-<p><code>qryflow</code> provides two functions to test whether parser
-and handler functions meet the specifications. An error will occur
-if:</p>
+<p><code>qryflow</code> provides <code><a href="../reference/validate_qryflow_handler.html">validate_qryflow_handler()</a></code>
+to test whether the handler function meets specifications. An error will
+occur if:</p>
 <ul>
 <li><p>The object is not a function</p></li>
 <li><p>The formal arguments are not included</p></li>
 <li><p>The formal arguments are not in the right order</p></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/validate_qryflow_parser.html">validate_qryflow_parser</a></span><span class="op">(</span><span class="va">qryflow_exec_parser</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/validate_qryflow_handler.html">validate_qryflow_handler</a></span><span class="op">(</span><span class="va">qryflow_exec_handler</span><span class="op">)</span></span></code></pre></div>
-<p>Note: These obviously do not test that the code within your function
-is correct nor does it test what output each function is expected to
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/validate_qryflow_handler.html">validate_qryflow_handler</a></span><span class="op">(</span><span class="va">qryflow_exec_handler</span><span class="op">)</span></span></code></pre></div>
+<p>Note: This does not test that the code within your function is
+correct nor does it test what output each function is expected to
 produce.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="how-the-registry-works">How the Registry Works<a class="anchor" aria-label="anchor" href="#how-the-registry-works"></a>
 </h2>
-<p><code>qryflow</code> maintains two internal environments:</p>
-<ul>
-<li><p><code>.qryflow_parsers</code> for chunk parsers</p></li>
-<li><p><code>.qryflow_handlers</code> for chunk handlers</p></li>
-</ul>
+<p><code>qryflow</code> maintains and internal environment called
+<code>.qryflow_handlers</code> to store registered chunk handlers.</p>
 <p>When the package is loaded, default types like “<code>query</code>”
 and “<code>exec</code>” are automatically registered. You can register
 additional types using:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Register separately</span></span>
-<span><span class="fu"><a href="../reference/register_qryflow_type.html">register_qryflow_parser</a></span><span class="op">(</span><span class="st">"custom"</span>, <span class="va">my_custom_parser_func</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/register_qryflow_type.html">register_qryflow_handler</a></span><span class="op">(</span><span class="st">"custom"</span>, <span class="va">my_custom_handler_func</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Or register both at once</span></span>
-<span><span class="fu"><a href="../reference/register_qryflow_type.html">register_qryflow_type</a></span><span class="op">(</span></span>
-<span>  <span class="st">"custom"</span>,</span>
-<span>  parser <span class="op">=</span> <span class="va">my_custom_parser_func</span>,</span>
-<span>  handler <span class="op">=</span> <span class="va">my_custom_handler_func</span>,</span>
-<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/register_qryflow_type.html">register_qryflow_type</a></span><span class="op">(</span><span class="st">"custom"</span>, <span class="va">my_custom_handler_func</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>This will validate the handler before registering in the internal
+environment.</p>
 <p>We can access what types are registered:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ls_qryflow_types.html">ls_qryflow_parsers</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ls_qryflow_types.html">ls_qryflow_handlers</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ls_qryflow_types.html">ls_qryflow_types</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ls_qryflow_types.html">ls_qryflow_types</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Custom types must be re-registered each session. To make them
 persistent, add registration calls to your <code>.Rprofile</code> (see:
 <a href="https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html" class="external-link">Managing
@@ -240,46 +165,16 @@ hook (see: <a href="https://r-pkgs.org/code.html#sec-code-onLoad-onAttach" class
 (2e)</a>).</p>
 </div>
 <div class="section level2">
-<h2 id="toy-example-1-create-query-send-chunk-type">Toy Example #1: Create <code>query-send</code> Chunk Type<a class="anchor" aria-label="anchor" href="#toy-example-1-create-query-send-chunk-type"></a>
+<h2 id="toy-example-create-query-send-chunk-type">Toy Example: Create <code>query-send</code> Chunk Type<a class="anchor" aria-label="anchor" href="#toy-example-create-query-send-chunk-type"></a>
 </h2>
 <p>This example shows how to implement a new chunk type that’s similar
 to <code>exec</code> and <code>query</code>. We will create a new type,
 called <code>query-send</code> that works like <code>query</code> except
 calls <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">DBI::dbSendQuery</a></code> instead of
 <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery</a></code>.</p>
-<p>First, create the parser and handler:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">query_send_parser</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Convert to individual lines</span></span>
-<span>  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_sql_lines.html">read_sql_lines</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">all_tags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_all_tags.html">extract_all_tags</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Check for explicit name</span></span>
-<span>  <span class="va">name</span> <span class="op">&lt;-</span> <span class="va">all_tags</span><span class="op">$</span><span class="va">name</span></span>
-<span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co"># Accomodate Aliased Approach</span></span>
-<span>    <span class="va">name</span> <span class="op">&lt;-</span> <span class="va">all_tags</span><span class="op">[[</span><span class="st">"query-send"</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="va">other_tags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_all_tags.html">subset_tags</a></span><span class="op">(</span></span>
-<span>    <span class="va">all_tags</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"query-send"</span>, <span class="st">"name"</span>, <span class="st">"type"</span><span class="op">)</span>,</span>
-<span>    negate <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">sql_txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">lines</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/is_tag_line.html">is_tag_line</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu"><a href="../reference/new_qryflow_chunk.html">new_qryflow_chunk</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"query-send"</span>,</span>
-<span>    name <span class="op">=</span> <span class="va">name</span>,</span>
-<span>    sql <span class="op">=</span> <span class="va">sql_txt</span>,</span>
-<span>    tags <span class="op">=</span> <span class="va">other_tags</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">query_send_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<p>First, create the handler:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query_send_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span><span class="op">$</span><span class="va">sql</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
@@ -288,21 +183,23 @@ calls <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="ex
 <span></span>
 <span>  <span class="va">results</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Then, register them:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>Validate it by hand, if you’d like:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/validate_qryflow_handler.html">validate_qryflow_handler</a></span><span class="op">(</span><span class="va">query_send_handler</span><span class="op">)</span></span></code></pre></div>
+<p>Then, register it:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/register_qryflow_type.html">register_qryflow_type</a></span><span class="op">(</span></span>
 <span>  <span class="st">"query-send"</span>,</span>
-<span>  parser <span class="op">=</span> <span class="va">query_send_parser</span>,</span>
 <span>  handler <span class="op">=</span> <span class="va">query_send_handler</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>Check that they registered properly:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Check that it registered properly:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ls_qryflow_types.html">ls_qryflow_types</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "exec"       "query"      "query-send"</span></span></code></pre></div>
 <p>And test it out on some SQL:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Creates an in-memory sqlite database and populates it with an mtcars table, named "mtcars"</span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_db_connect.html">example_db_connect</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
 <span></span>
@@ -323,30 +220,6 @@ calls <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="ex
 <span><span class="co">#&gt; 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1</span></span>
 <span><span class="co">#&gt; 5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2</span></span>
 <span><span class="co">#&gt; 6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="exercise-implement-an-include-chunk-type">Exercise: Implement an <code>include</code> Chunk Type<a class="anchor" aria-label="anchor" href="#exercise-implement-an-include-chunk-type"></a>
-</h2>
-<p>Want to try extending <code>qryflow</code> on your own?</p>
-<p>Implement a custom “<code>include</code>” chunk type that loads SQL
-from a separate file and injects it as a chunk.</p>
-<p>For example, take the following statement:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">-- @include: mysql.sql</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">-- @query: my_df</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="kw">table</span></span></code></pre></div>
-<p>Assuming <code>mysql.sql</code> contains:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co">-- @query: mysql</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> <span class="kw">table</span> <span class="kw">FROM</span> another_table</span></code></pre></div>
-<p>How would you create the parser and handler so that functionally,
-what gets returned is:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">-- @query: mysql</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> <span class="kw">table</span> <span class="kw">FROM</span> another_table</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">-- @query: my_df</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="kw">table</span></span></code></pre></div>
-<p>A word of caution: this may be trickier than you think given how
-chunks are currently implemented.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

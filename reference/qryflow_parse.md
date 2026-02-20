@@ -7,7 +7,7 @@ other custom markers.
 ## Usage
 
 ``` r
-qryflow_parse(sql)
+qryflow_parse(sql, default_type = "query")
 ```
 
 ## Arguments
@@ -16,6 +16,10 @@ qryflow_parse(sql)
 
   A file path to a SQL workflow file, or a character vector containing
   SQL lines.
+
+- default_type:
+
+  The default chunk type (defaults to "query")
 
 ## Value
 

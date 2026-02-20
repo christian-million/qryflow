@@ -21,11 +21,6 @@ validate_qryflow_handler(handler)
 Logical. Generates an error if the object does not pass all the
 criteria.
 
-## See also
-
-[`validate_qryflow_parser()`](https://christian-million.github.io/qryflow/reference/validate_qryflow_parser.md)
-for the parser equivalent.
-
 ## Examples
 
 ``` r

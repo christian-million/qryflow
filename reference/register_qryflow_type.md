@@ -1,17 +1,11 @@
 # Register custom chunk types
 
-Use these functions to register the parsers and handlers associated with
-custom types. `register_qryflow_type` is a wrapper around both
-`register_qryflow_parser` and `register_qryflow_handler`.
+Use this function to register a custom chunk type with qryflow
 
 ## Usage
 
 ``` r
-register_qryflow_type(type, parser, handler, overwrite = FALSE)
-
-register_qryflow_parser(type, parser, overwrite = FALSE)
-
-register_qryflow_handler(type, handler, overwrite = FALSE)
+register_qryflow_type(type, handler, overwrite = FALSE)
 ```
 
 ## Arguments
@@ -20,11 +14,6 @@ register_qryflow_handler(type, handler, overwrite = FALSE)
 
   Character indicating the chunk type (e.g., "exec", "query")
 
-- parser:
-
-  A function to parse the SQL associated with the type. Must accept
-  arguments "x" and "..." and return a `qryflow_chunk` object.
-
 - handler:
 
   A function to execute the SQL associated with the type. Must accept
@@ -32,7 +21,7 @@ register_qryflow_handler(type, handler, overwrite = FALSE)
 
 - overwrite:
 
-  Logical. Overwrite existing parser and handler, if exists?
+  Logical. Overwrite existing handler, if exists?
 
 ## Value
 
@@ -47,28 +36,12 @@ that leverages [`.onLoad()`](https://rdrr.io/r/base/ns-hooks.html)
 ## Examples
 
 ``` r
-# Create custom parser #####
-custom_parser <- function(x, ...){
-  # Custom parsing code will go here
-
-  # new_qryflow_chunk(type = "custom", name = name, sql = sql_txt, tags = tags)
-}
-
 # Create custom handler #####
 custom_handler <- function(con, chunk, ...){
   # Custom execution code will go here...
   # return(result)
 }
 
-# Register Separately #####
-register_qryflow_parser("custom", custom_parser, overwrite = TRUE)
-#> [1] TRUE
-
-register_qryflow_handler("custom", custom_handler, overwrite = TRUE)
-#> [1] TRUE
-
-
-# Register Simultaneously #####
-register_qryflow_type("query-send", custom_parser, custom_handler, overwrite = TRUE)
+register_qryflow_type("query-send", custom_handler, overwrite = TRUE)
 #> [1] TRUE
 ```

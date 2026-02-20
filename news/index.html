@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">qryflow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,18 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="qryflow-development-version">qryflow (development version)<a class="anchor" aria-label="anchor" href="#qryflow-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.3.0" id="qryflow-030">qryflow 0.3.0<a class="anchor" aria-label="anchor" href="#qryflow-030"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-3-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-3-0"></a></h3>
+<ul><li><p>The type-specific parser system has been removed (<a href="https://github.com/christian-million/qryflow/issues/13" class="external-link">#13</a>) . <code>register_qryflow_parser()</code>, <code>ls_qryflow_parsers()</code> <code>validate_qryflow_parser()</code>, and <code>qryflow_parser_exists()</code> are no longer available. Custom chunk behaviour should now be implemented entirely through handlers. See <code><a href="../reference/register_qryflow_type.html">register_qryflow_type()</a></code> for details.</p></li>
+<li><p><code>ls_qryflow_handlers()</code> and <code>register_qryflow_handler()</code> were removed. Use <code><a href="../reference/ls_qryflow_types.html">ls_qryflow_types()</a></code> and <code><a href="../reference/register_qryflow_type.html">register_qryflow_type()</a></code> instead.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal-changes-0-3-0">Internal Changes<a class="anchor" aria-label="anchor" href="#internal-changes-0-3-0"></a></h3>
+<ul><li><p>Parsing is now handled by a single unified parser that produces a consistent <code>qryflow_chunk</code> structure regardless of chunk type. This replaces the previous system where each chunk type could define its own parsing logic.</p></li>
+<li><p>User provided duplicate names now generates an error via refactored approach to <code>fix_chunk_names()</code> (Now, <code>resolve_chunk_names()</code>)</p></li>
+<li><p>Updated documentation, README, and vignettes to accomodate unified parsing.</p></li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="qryflow-020">qryflow 0.2.0<a class="anchor" aria-label="anchor" href="#qryflow-020"></a></h2><p class="text-muted">CRAN release: 2026-02-05</p>

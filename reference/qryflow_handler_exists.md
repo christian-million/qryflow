@@ -19,11 +19,6 @@ qryflow_handler_exists(type)
 
 Logical. Does `type` exist in the handler registry?
 
-## See also
-
-[`qryflow_parser_exists()`](https://christian-million.github.io/qryflow/reference/qryflow_parser_exists.md)
-for the parser equivalent.
-
 ## Examples
 
 ``` r

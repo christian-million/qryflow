@@ -9,7 +9,7 @@ discrete tagged chunks based on @query, @exec, and other custom markers."></head
 
     <a class="navbar-brand me-2" href="../index.html">qryflow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@ discrete tagged chunks based on @query, @exec, and other custom markers."></head
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Parse a SQL workflow into tagged chunks</h1>
-      <small class="dont-index">Source: <a href="https://github.com/christian-million/qryflow/blob/main/R/qryflow.R" class="external-link"><code>R/qryflow.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/christian-million/qryflow/blob/main/R/qryflow_parse.R" class="external-link"><code>R/qryflow_parse.R</code></a></small>
       <div class="d-none name"><code>qryflow_parse.Rd</code></div>
     </div>
 
@@ -48,7 +48,7 @@ discrete tagged chunks based on <code>@query</code>, <code>@exec</code>, and oth
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">qryflow_parse</span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">qryflow_parse</span><span class="op">(</span><span class="va">sql</span>, default_type <span class="op">=</span> <span class="st">"query"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -57,6 +57,10 @@ discrete tagged chunks based on <code>@query</code>, <code>@exec</code>, and oth
 
 <dl><dt id="arg-sql">sql<a class="anchor" aria-label="anchor" href="#arg-sql"></a></dt>
 <dd><p>A file path to a SQL workflow file, or a character vector containing SQL lines.</p></dd>
+
+
+<dt id="arg-default-type">default_type<a class="anchor" aria-label="anchor" href="#arg-default-type"></a></dt>
+<dd><p>The default chunk type (defaults to "query")</p></dd>
 
 </dl></div>
     <div class="section level2">

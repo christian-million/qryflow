@@ -29,19 +29,11 @@ Functions that allow users to register custom types and inspect the
 registry. These are useful for extending qryflow.
 
 - [`register_qryflow_type()`](https://christian-million.github.io/qryflow/reference/register_qryflow_type.md)
-  [`register_qryflow_parser()`](https://christian-million.github.io/qryflow/reference/register_qryflow_type.md)
-  [`register_qryflow_handler()`](https://christian-million.github.io/qryflow/reference/register_qryflow_type.md)
   : Register custom chunk types
-- [`qryflow_parser_exists()`](https://christian-million.github.io/qryflow/reference/qryflow_parser_exists.md)
-  : Check existence of a given parser in the registry
 - [`qryflow_handler_exists()`](https://christian-million.github.io/qryflow/reference/qryflow_handler_exists.md)
   : Check existence of a given handler in the registry
-- [`ls_qryflow_handlers()`](https://christian-million.github.io/qryflow/reference/ls_qryflow_types.md)
-  [`ls_qryflow_parsers()`](https://christian-million.github.io/qryflow/reference/ls_qryflow_types.md)
-  [`ls_qryflow_types()`](https://christian-million.github.io/qryflow/reference/ls_qryflow_types.md)
+- [`ls_qryflow_types()`](https://christian-million.github.io/qryflow/reference/ls_qryflow_types.md)
   : List currently registered chunk types
-- [`validate_qryflow_parser()`](https://christian-million.github.io/qryflow/reference/validate_qryflow_parser.md)
-  : Ensure correct parser structure
 - [`validate_qryflow_handler()`](https://christian-million.github.io/qryflow/reference/validate_qryflow_handler.md)
   : Ensure correct handler structure
 

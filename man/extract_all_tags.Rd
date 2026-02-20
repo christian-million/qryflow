@@ -2,28 +2,15 @@
 % Please edit documentation in R/parse-helpers.R
 \name{extract_all_tags}
 \alias{extract_all_tags}
-\alias{extract_tag}
-\alias{extract_name}
-\alias{extract_type}
 \alias{subset_tags}
 \title{Extract tagged metadata from a SQL chunk}
 \usage{
-extract_all_tags(text, tag_pattern = "^\\\\s*--\\\\s*@([^:]+):\\\\s*(.*)$")
-
-extract_tag(text, tag)
-
-extract_name(text)
-
-extract_type(text)
+extract_all_tags(text)
 
 subset_tags(tags, keep, negate = FALSE)
 }
 \arguments{
 \item{text}{A character vector of SQL lines or a file path to a SQL script.}
-
-\item{tag_pattern}{A regular expression for extracting tags. Defaults to lines in the form \verb{-- @tag: value}.}
-
-\item{tag}{A character string naming the tag to extract (used in \code{extract_tag()}).}
 
 \item{tags}{A named list of tags, typically from \code{extract_all_tags()}. Used in \code{subset_tags()}.}
 
@@ -34,7 +21,6 @@ subset_tags(tags, keep, negate = FALSE)
 \value{
 \itemize{
 \item \code{extract_all_tags()}: A named list of all tags found in the SQL chunk.
-\item \code{extract_tag()}, \code{extract_name()}, \code{extract_type()}: A single tag value (character or \code{NULL}).
 \item \code{subset_tags()}: A filtered named list of tags or \code{NULL} if none remain.
 }
 }
@@ -43,19 +29,6 @@ subset_tags(tags, keep, negate = FALSE)
 and returns them as a named list. This is exported with the intent to be useful for users
 extending \code{qryflow}. It's typically used against a single SQL chunk, such as one parsed from a
 \code{.sql} file.
-
-Additional helpers like \code{extract_tag()}, \code{extract_name()}, and \code{extract_type()} provide
-convenient access to specific tag values. \code{subset_tags()} lets you filter or exclude tags by name.
-}
-\details{
-The formal type of a qryflow SQL chunk is determined by \code{extract_type()} using a prioritized approach:
-\enumerate{
-\item If the chunk includes an explicit \verb{-- @type:} tag, its value is used directly as the chunk type.
-\item If the \verb{@type:} tag is absent, \code{qryflow} searches for other tags (e.g., \verb{@query:}, \verb{@exec:}) that
-correspond to registered chunk types through \code{\link[=ls_qryflow_types]{ls_qryflow_types()}}. The first matching tag found defines the chunk type.
-\item If neither an explicit \verb{@type:} tag nor any recognized tag is present, the chunk type falls back
-to the default type returned by \code{\link[=qryflow_default_type]{qryflow_default_type()}}.
-}
 }
 \examples{
 filepath <- example_sql_path('mtcars.sql')
@@ -63,9 +36,6 @@ parsed <- qryflow_parse(filepath)
 
 chunk <- parsed[[1]]
 tags <- extract_all_tags(chunk$sql)
-
-extract_name(chunk$sql)
-extract_type(chunk$sql)
 subset_tags(tags, keep = c("query"))
 }
 \seealso{

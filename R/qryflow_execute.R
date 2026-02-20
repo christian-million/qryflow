@@ -55,7 +55,7 @@ qryflow_execute <- function(
   names(chunk_meta) <- chunk_names
 
   # Workflow Start Time
-  wf_start <- Sys.time()
+  wf_start <- meta_time()
 
   # Avoiding copy-on-modify, by not assigning directly to `qryflow`
   for (i in seq_along(x)) {
@@ -67,18 +67,25 @@ qryflow_execute <- function(
   }
 
   for (nm in chunk_names) {
-    x[[nm]] <- set_meta(x[[nm]], chunk_meta[[nm]])
+    m <- chunk_meta[[nm]]
+    x[[nm]] <- set_meta(
+      x[[nm]],
+      start_time = m$start_time,
+      end_time = m$end_time,
+      duration = m$duration,
+      status = m$status
+    )
     x[[nm]]$results <- chunk_results[[nm]]
   }
 
-  wf_end <- Sys.time()
+  wf_end <- meta_time()
   wf_status <- "success"
 
   out <- set_meta(
     x,
     start_time = wf_start,
     end_time = wf_end,
-    duration = difftime(wf_start, wf_end),
+    duration = meta_duration(wf_start, wf_end),
     status = wf_status
   )
 

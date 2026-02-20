@@ -81,19 +81,7 @@ parse_single_chunk <- function(chunk, default_type = "query") {
   all_tags <- extract_all_tags(lines)
 
   name <- all_tags$name
-  type <- all_tags$type
-
-  # Handle Shortcut Tags (exec, query)
-  if (is.null(type)) {
-    registered_types <- ls_qryflow_types()
-    tags_nm <- names(all_tags)
-
-    type <- tags_nm[which(tags_nm %in% registered_types)][1]
-
-    if (is.null(type) || is.na(type)) {
-      type <- default_type
-    }
-  }
+  type <- resolve_chunk_type(all_tags, default_type)
 
   # TODO: validate type
   # TODO: user_feedback
@@ -183,4 +171,21 @@ resolve_chunk_names <- function(chunks) {
   }
 
   return(chunks)
+}
+
+resolve_chunk_type <- function(all_tags, default_type) {
+  type <- all_tags$type
+
+  # Handle Shortcut Tags (exec, query)
+  if (is.null(type)) {
+    registered_types <- ls_qryflow_types()
+    tags_nm <- names(all_tags)
+
+    type <- tags_nm[which(tags_nm %in% registered_types)][1]
+
+    if (is.null(type) || is.na(type)) {
+      type <- default_type
+    }
+  }
+  type
 }

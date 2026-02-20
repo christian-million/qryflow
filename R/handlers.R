@@ -31,16 +31,10 @@ get_qryflow_handler <- function(type) {
 #'
 #' @examples
 #' qryflow_handler_exists("query")
-#' @seealso [qryflow_parser_exists()] for the parser equivalent.
+#'
 #' @export
 qryflow_handler_exists <- function(type) {
   exists(type, envir = .qryflow_handlers, inherits = FALSE)
-}
-
-#' @export
-#' @rdname ls_qryflow_types
-ls_qryflow_handlers <- function() {
-  ls(.qryflow_handlers)
 }
 
 #' Ensure correct handler structure
@@ -63,7 +57,7 @@ ls_qryflow_handlers <- function() {
 #' }
 #'
 #' validate_qryflow_handler(custom_func)
-#' @seealso [validate_qryflow_parser()] for the parser equivalent.
+#'
 #' @export
 validate_qryflow_handler <- function(handler) {
   if (!is.function(handler)) {

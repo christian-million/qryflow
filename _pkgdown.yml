@@ -21,14 +21,8 @@ reference:
     These are useful for extending qryflow.
   contents:
   - register_qryflow_type
-  - register_qryflow_parser
-  - register_qryflow_handler
-  - qryflow_parser_exists
   - qryflow_handler_exists
   - ls_qryflow_types
-  - ls_qryflow_parsers
-  - ls_qryflow_handlers
-  - validate_qryflow_parser
   - validate_qryflow_handler
 
 - title: Helpers for Extending qryflow

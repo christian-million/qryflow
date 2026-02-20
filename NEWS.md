@@ -1,5 +1,22 @@
 # qryflow (development version)
 
+## Breaking Changes
+
+- The type-specific parser system has been removed ([#13](https://github.com/christian-million/qryflow/issues/13))
+. `register_qryflow_parser()`, `ls_qryflow_parsers()` `validate_qryflow_parser()`, and `qryflow_parser_exists()` are no longer available. Custom chunk behaviour should now be implemented entirely through handlers. See `register_qryflow_type()` for details.
+
+- `ls_qryflow_handlers()` and `register_qryflow_handler()` were removed. Use `ls_qryflow_types()` and `register_qryflow_type()` instead.
+
+## Internal Changes
+
+- Parsing is now handled by a single unified parser that produces a consistent
+  `qryflow_chunk` structure regardless of chunk type. This replaces the previous
+  system where each chunk type could define its own parsing logic.
+
+- User provided duplicate names now generates an error via refactored approach to `fix_chunk_names()` (Now, `resolve_chunk_names()`)
+
+- Updated documentation, README, and vignettes to accomodate unified parsing.
+
 # qryflow 0.2.0
 
 * Breaking change: `qryflow()`, `qryflow_run()`, `qryflow_execute()` and internal functions now accept `con` argument first, before the `sql`/`workflow` arguments. This makes the API consistent with DBI and other DB packages, improves ergonomics, and enables method dispatch on connection classes. (#5)

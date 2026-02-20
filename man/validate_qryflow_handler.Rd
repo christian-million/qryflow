@@ -26,7 +26,5 @@ custom_func <- function(con, chunk, ...){
 }
 
 validate_qryflow_handler(custom_func)
-}
-\seealso{
-\code{\link[=validate_qryflow_parser]{validate_qryflow_parser()}} for the parser equivalent.
+
 }

@@ -2,32 +2,22 @@
 % Please edit documentation in R/type-registration.R
 \name{register_qryflow_type}
 \alias{register_qryflow_type}
-\alias{register_qryflow_parser}
-\alias{register_qryflow_handler}
 \title{Register custom chunk types}
 \usage{
-register_qryflow_type(type, parser, handler, overwrite = FALSE)
-
-register_qryflow_parser(type, parser, overwrite = FALSE)
-
-register_qryflow_handler(type, handler, overwrite = FALSE)
+register_qryflow_type(type, handler, overwrite = FALSE)
 }
 \arguments{
 \item{type}{Character indicating the chunk type (e.g., "exec", "query")}
 
-\item{parser}{A function to parse the SQL associated with the type. Must accept arguments "x" and "..." and return a \code{qryflow_chunk} object.}
-
 \item{handler}{A function to execute the SQL associated with the type. Must accept arguments "chunk", "con", and "...".}
 
-\item{overwrite}{Logical. Overwrite existing parser and handler, if exists?}
+\item{overwrite}{Logical. Overwrite existing handler, if exists?}
 }
 \value{
 Logical. Indicating whether types were successfully registered.
 }
 \description{
-Use these functions to register the parsers and handlers
-associated with custom types. \code{register_qryflow_type} is a wrapper around both
-\code{register_qryflow_parser} and \code{register_qryflow_handler}.
+Use this function to register a custom chunk type with qryflow
 }
 \details{
 To avoid manually registering your custom type each session, consider adding
@@ -35,25 +25,12 @@ the registration code to your \code{.Rprofile} or creating a package that levera
 \code{\link[=.onLoad]{.onLoad()}}
 }
 \examples{
-# Create custom parser #####
-custom_parser <- function(x, ...){
-  # Custom parsing code will go here
-
-  # new_qryflow_chunk(type = "custom", name = name, sql = sql_txt, tags = tags)
-}
-
 # Create custom handler #####
 custom_handler <- function(con, chunk, ...){
   # Custom execution code will go here...
   # return(result)
 }
 
-# Register Separately #####
-register_qryflow_parser("custom", custom_parser, overwrite = TRUE)
+register_qryflow_type("query-send", custom_handler, overwrite = TRUE)
 
-register_qryflow_handler("custom", custom_handler, overwrite = TRUE)
-
-
-# Register Simultaneously #####
-register_qryflow_type("query-send", custom_parser, custom_handler, overwrite = TRUE)
 }

@@ -17,7 +17,5 @@ Checks whether the specified handler exists in the handler registry environment.
 }
 \examples{
 qryflow_handler_exists("query")
-}
-\seealso{
-\code{\link[=qryflow_parser_exists]{qryflow_parser_exists()}} for the parser equivalent.
+
 }

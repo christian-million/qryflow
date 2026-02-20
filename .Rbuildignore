@@ -11,3 +11,5 @@
 ^[.]?air[.]toml$
 ^\.vscode$
 ^revdep$
+^doc$
+^Meta$

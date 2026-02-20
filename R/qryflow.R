@@ -129,33 +129,6 @@ qryflow_run_ <- function(con, sql, ...) {
   return(results)
 }
 
-#' Parse a SQL workflow into tagged chunks
-#'
-#' `qryflow_parse()` reads a SQL workflow file or character vector and parses it into
-#' discrete tagged chunks based on `@query`, `@exec`, and other custom markers.
-#'
-#' This function is used internally by [`qryflow_run()`], but can also be used directly to
-#' preprocess or inspect the structure of a SQL workflow.
-#'
-#' @param sql A file path to a SQL workflow file, or a character vector containing SQL lines.
-#'
-#' @returns An object of class `qryflow_workflow`, which is a structured list of SQL chunks and
-#'   metadata.
-#'
-#' @seealso [`qryflow()`], [`qryflow_run()`], [`qryflow_execute()`]
-#'
-#' @examples
-#' filepath <- example_sql_path("mtcars.sql")
-#'
-#' parsed <- qryflow_parse(filepath)
-#' @export
-qryflow_parse <- function(sql) {
-  statement <- read_sql_lines(sql)
-
-  chunks <- parse_qryflow_chunks(statement)
-
-  new_qryflow_workflow(chunks = chunks, source = collapse_sql_lines(statement))
-}
 
 #' Execute a parsed qryflow SQL workflow
 #'

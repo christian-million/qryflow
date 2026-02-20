@@ -124,8 +124,8 @@ Consider the following vignettes for a more in depth understanding:
   (`vignette("advanced-qryflow", package = "qryflow")`).
 
 - Extend `qryflow`: A guide to understanding how to implement custom
-  tags, or override the built-in tags, using custom chunk parsers and
-  handlers (`vignette("extend-qryflow", package = "qryflow")`).
+  tags, or override the built-in tags, using custom chunk handlers
+  (`vignette("extend-qryflow", package = "qryflow")`).
 
 ## Similar Packages
 

@@ -34,9 +34,6 @@ reference:
   - collapse_sql_lines
   - is_tag_line
   - extract_all_tags
-  - extract_tag
-  - extract_name
-  - extract_type
   - subset_tags
   - new_qryflow_chunk
   - qryflow_default_type

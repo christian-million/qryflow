@@ -7,7 +7,20 @@ qryflow_handle_chunk <- function(con, chunk, ...) {
     stop(paste0("No handler registered for chunk type '", chunk$type, "'"))
   }
 
-  handler(con, chunk, ...)
+  start_time <- Sys.time()
+  result <- handler(con, chunk, ...)
+  status <- "success"
+  end_time <- Sys.time()
+
+  list(
+    result = result,
+    meta = list(
+      start_time = start_time,
+      end_time = end_time,
+      duration = difftime(start_time, end_time),
+      status = status
+    )
+  )
 }
 
 get_qryflow_handler <- function(type) {

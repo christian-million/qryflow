@@ -104,7 +104,7 @@ qryflow_run <- function(con, sql, ...) {
 #' DBI::dbDisconnect(con)
 #' @export
 qryflow_results <- function(x, ..., simplify = FALSE) {
-  if (!inherits(x, "qryflow_result")) {
+  if (!inherits(x, "qryflow")) {
     stop("`x` is not an object of class `qryflow_result`")
   }
 
@@ -127,77 +127,6 @@ qryflow_run_ <- function(con, sql, ...) {
   results <- qryflow_execute(con, wf, ...)
 
   return(results)
-}
-
-
-#' Execute a parsed qryflow SQL workflow
-#'
-#' @description
-#' `qryflow_execute()` takes a parsed workflow object (as returned by [`qryflow_parse()`]),
-#' executes each chunk (e.g., `@query`, `@exec`), and collects the results and timing metadata.
-#'
-#' This function is used internally by [`qryflow_run()`], but can be called directly in concert with [`qryflow_parse()`] if you want
-#' to manually control parsing and execution.
-#'
-#' @param con A database connection from [DBI::dbConnect()]
-#' @param x A parsed qryflow workflow object, typically created by [`qryflow_parse()`]
-#' @param ... Reserved for future use.
-#' @param source Optional; a character string indicating the source SQL to include in metadata.
-#'
-#' @returns An object of class `qryflow_result`, containing executed chunks with results and a `meta` field
-#'   that includes timing and source information.
-#'
-#' @seealso [`qryflow_run()`], [`qryflow_parse()`]
-#'
-#' @examples
-#' con <- example_db_connect(mtcars)
-#'
-#' filepath <- example_sql_path("mtcars.sql")
-#'
-#' parsed <- qryflow_parse(filepath)
-#'
-#' executed <- qryflow_execute(con, parsed, source = filepath)
-#'
-#' DBI::dbDisconnect(con)
-#' @export
-qryflow_execute <- function(con, x, ..., source = NULL) {
-  timings <- list()
-  ttl_start <- Sys.time()
-
-  for (chunk in seq_along(x$chunks)) {
-    # TODO: output to the console to provide user with feedback
-    start_time <- Sys.time()
-
-    x$chunks[[chunk]]["results"] <- list(qryflow_handle_chunk(
-      con,
-      x$chunks[[chunk]],
-      ...
-    ))
-
-    end_time <- Sys.time()
-
-    timings[[chunk]] <- list(
-      chunk = x$chunks[[chunk]]$name,
-      start_time = start_time,
-      end_time = end_time
-    )
-  }
-
-  ttl_end <- Sys.time()
-  timings <- append(
-    timings,
-    list(c(
-      chunk = "overall_qryflow_run",
-      start_time = ttl_start,
-      end_time = ttl_end
-    ))
-  )
-  df_time <- as.data.frame(do.call(rbind, timings), stringsAsFactors = FALSE)
-
-  out <- do.call(new_qryflow_result, x$chunks)
-  out[["meta"]] <- list(timings = df_time, source = source)
-
-  return(out)
 }
 
 #' Access the default qryflow chunk type

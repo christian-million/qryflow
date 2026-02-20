@@ -1,7 +1,7 @@
-test_that("qryflow_parse() returns a qryflow_workflow object", {
+test_that("qryflow_parse() returns a `qryflow` object", {
   sql <- read_sql_lines(example_sql_path('mtcars.sql'))
   parsed <- qryflow_parse(sql)
-  expect_s3_class(parsed, "qryflow_workflow")
+  expect_s3_class(parsed, "qryflow")
 })
 
 test_that("parse_qryflow_chunks() returns correct number of chunks", {

@@ -24,7 +24,7 @@ qryflow_parse <- function(sql, default_type = "query") {
 
   chunks <- parse_qryflow_chunks(statement, default_type)
 
-  new_qryflow_workflow(chunks = chunks, source = collapse_sql_lines(statement))
+  new_qryflow(chunks = chunks, source = collapse_sql_lines(statement))
 }
 
 parse_qryflow_chunks <- function(sql, default_type = "query") {
@@ -127,7 +127,8 @@ parse_chunks <- function(chunks, default_type = "query") {
       type = src[[i]]$type,
       name = src[[i]]$name,
       sql = src[[i]]$sql,
-      tags = src[[i]]$tags
+      tags = src[[i]]$tags,
+      meta = init_meta(source = paste0(chunks[[i]], collapse = "\n"))
     )
   }
 

@@ -61,7 +61,7 @@ to the default type returned by \code{\link[=qryflow_default_type]{qryflow_defau
 filepath <- example_sql_path('mtcars.sql')
 parsed <- qryflow_parse(filepath)
 
-chunk <- parsed$chunks[[1]]
+chunk <- parsed[[1]]
 tags <- extract_all_tags(chunk$sql)
 
 extract_name(chunk$sql)

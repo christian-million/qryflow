@@ -9,6 +9,7 @@
 #' @param sql SQL statement associated with chunk
 #' @param tags Optional, additional tags included in chunk
 #' @param results Optional, filled in after chunk execution
+#' @param meta Optional, stores meta data on the object
 #'
 #' @returns An list-like object of class `qryflow_chunk`
 #'
@@ -20,7 +21,8 @@ new_qryflow_chunk <- function(
   name = character(),
   sql = character(),
   tags = NULL,
-  results = NULL
+  results = NULL,
+  meta = init_meta()
 ) {
   x <- list(
     type = type,
@@ -30,7 +32,7 @@ new_qryflow_chunk <- function(
     results = results
   )
 
-  structure(x, class = "qryflow_chunk")
+  structure(x, meta = meta, class = "qryflow_chunk")
 }
 
 #' @export

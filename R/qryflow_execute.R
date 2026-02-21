@@ -11,10 +11,10 @@
 #' @param x A `qryflow` object, typically created by [`qryflow_parse()`]
 #' @param ... Reserved for future use
 #' @param on_error Controls behaviour when a chunk fails during execution.
-#'   One of `"stop"` (default) or `"continue"`. `"stop"` halts
-#'   execution immediately and returns the partially executed workflow. `"continue"`
-#'   records the error in the chunk's `meta` and continues. The global
-#'   default can be set with `options(qryflow.on_error = "continue")`.
+#'   One of `"stop"` (default), `"warn"`, or `"collecte"`. `"stop"` halts
+#'   execution immediately and returns the partially executed workflow. `"warn"`
+#'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
+#'   all errors from across all chunks and reports them at the end.
 #' @param verbose Logical. If `TRUE`, emits a message before each chunk
 #'   identifying its name and type, and prints a summary on completion
 #'   reporting total chunks run, successes, errors, skipped, and elapsed time.
@@ -41,9 +41,10 @@ qryflow_execute <- function(
   con,
   x,
   ...,
-  on_error = c("stop", "continue"),
+  on_error = c("stop", "warn", "collect"),
   verbose = TRUE
 ) {
+  on_error <- resolve_on_error(on_error)
   # Prepare vectors to store output
   chunk_names <- names(x)
   n <- length(x)

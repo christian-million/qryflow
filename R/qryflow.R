@@ -14,6 +14,11 @@
 #' @param con A database connection from [DBI::dbConnect()]
 #' @param sql A file path to a `.sql` workflow or a character string containing SQL code.
 #' @param ... Additional arguments passed to [`qryflow_run()`] or [`qryflow_results()`].
+#' @param on_error Controls behaviour when a chunk fails during execution.
+#'   One of `"stop"` (default), `"warn"`, or `"collecte"`. `"stop"` halts
+#'   execution immediately and returns the partially executed workflow. `"warn"`
+#'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
+#'   all errors from across all chunks and reports them at the end.
 #' @param simplify Logical; if `TRUE` (default), a list of length 1 is simplified to the
 #'   single result object.
 #'
@@ -31,8 +36,14 @@
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow <- function(con, sql, ..., simplify = TRUE) {
-  x <- qryflow_run(con, sql, ...)
+qryflow <- function(
+  con,
+  sql,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  simplify = TRUE
+) {
+  x <- qryflow_run(con, sql, ..., on_error)
 
   qryflow_results(x, ..., simplify = simplify)
 }
@@ -49,6 +60,11 @@ qryflow <- function(con, sql, ..., simplify = TRUE) {
 #' @param con A database connection from [DBI::dbConnect()]
 #' @param sql A character string representing either the path to a `.sql` file or raw SQL content.
 #' @param ... Additional arguments passed to [`qryflow_execute()`].
+#' @param on_error Controls behaviour when a chunk fails during execution.
+#'   One of `"stop"` (default), `"warn"`, or `"collecte"`. `"stop"` halts
+#'   execution immediately and returns the partially executed workflow. `"warn"`
+#'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
+#'   all errors from across all chunks and reports them at the end.
 #'
 #' @returns A list representing the evaluated workflow, containing query results, execution metadata,
 #'   or both, depending on the contents of the SQL script.
@@ -71,8 +87,13 @@ qryflow <- function(con, sql, ..., simplify = TRUE) {
 #'
 #' DBI::dbDisconnect(con)
 #' @export
-qryflow_run <- function(con, sql, ...) {
-  obj <- qryflow_run_(con, sql, ...)
+qryflow_run <- function(
+  con,
+  sql,
+  ...,
+  on_error = c("stop", "warn", "collect")
+) {
+  obj <- qryflow_run_(con, sql, ..., on_error = on_error)
 
   obj
 }
@@ -120,11 +141,11 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
   return(res)
 }
 
-qryflow_run_ <- function(con, sql, ...) {
+qryflow_run_ <- function(con, sql, ..., on_error) {
   statement <- read_sql_lines(sql)
 
   wf <- qryflow_parse(statement)
-  results <- qryflow_execute(con, wf, ...)
+  results <- qryflow_execute(con, wf, ..., on_error = on_error)
 
   return(results)
 }

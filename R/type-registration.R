@@ -52,10 +52,6 @@ register_qryflow_type <- function(type, handler, overwrite = FALSE) {
 #' @description
 #' Helper function to access the names of the currently registered chunk types.
 #'
-#' @details
-#' `ls_qryflow_types` is a shortcut for `ls_qryflow_handlers`. It's expected that a handler
-#' exists for each type.
-#'
 #' @returns Character vector of registered chunk types
 #'
 #' @examples

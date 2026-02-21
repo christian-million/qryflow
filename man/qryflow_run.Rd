@@ -4,7 +4,7 @@
 \alias{qryflow_run}
 \title{Parse and execute a tagged SQL workflow}
 \usage{
-qryflow_run(con, sql, ...)
+qryflow_run(con, sql, ..., on_error = c("stop", "warn", "collect"))
 }
 \arguments{
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
@@ -12,6 +12,12 @@ qryflow_run(con, sql, ...)
 \item{sql}{A character string representing either the path to a \code{.sql} file or raw SQL content.}
 
 \item{...}{Additional arguments passed to \code{\link[=qryflow_execute]{qryflow_execute()}}.}
+
+\item{on_error}{Controls behaviour when a chunk fails during execution.
+One of \code{"stop"} (default), \code{"warn"}, or \code{"collect"}. \code{"stop"} halts
+execution immediately and returns the partially executed workflow. \code{"warn"}
+records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
+all errors from across all chunks and reports them at the end.}
 }
 \value{
 A list representing the evaluated workflow, containing query results, execution metadata,

@@ -47,7 +47,7 @@ qryflow_execute <- function(
   if (!inherits(x, "qryflow")) {
     stop_qryflow("`x` is not an object of class `qryflow`")
   }
-  on_error <- resolve_on_error(on_error)
+  on_error <- validate_on_error(on_error)
 
   # Prepare vectors to store output
   chunk_names <- names(x)

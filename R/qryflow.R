@@ -43,6 +43,7 @@ qryflow <- function(
   on_error = c("stop", "warn", "collect"),
   simplify = TRUE
 ) {
+  on_error <- validate_on_error(on_error)
   x <- qryflow_run(con, sql, ..., on_error = on_error)
 
   qryflow_results(x, ..., simplify = simplify)
@@ -93,6 +94,7 @@ qryflow_run <- function(
   ...,
   on_error = c("stop", "warn", "collect")
 ) {
+  on_error <- validate_on_error(on_error)
   obj <- qryflow_run_(con, sql, ..., on_error = on_error)
 
   obj

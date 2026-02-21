@@ -43,7 +43,7 @@ qryflow <- function(
   on_error = c("stop", "warn", "collect"),
   simplify = TRUE
 ) {
-  x <- qryflow_run(con, sql, ..., on_error)
+  x <- qryflow_run(con, sql, ..., on_error = on_error)
 
   qryflow_results(x, ..., simplify = simplify)
 }

@@ -25,7 +25,6 @@ dispatch_on_error <- function(on_error, message, chunk, workflow, errors) {
       warn_qryflow_chunk(message, chunk)
     },
     collect = {
-      # Accumulate silently - signal is deferred to end of workflow
       c(errors, list(list(name = chunk$name, message = message)))
     }
   )

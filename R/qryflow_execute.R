@@ -11,7 +11,7 @@
 #' @param x A `qryflow` object, typically created by [`qryflow_parse()`]
 #' @param ... Reserved for future use
 #' @param on_error Controls behaviour when a chunk fails during execution.
-#'   One of `"stop"` (default), `"warn"`, or `"collecte"`. `"stop"` halts
+#'   One of `"stop"` (default), `"warn"`, or `"collect"`. `"stop"` halts
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
@@ -45,9 +45,11 @@ qryflow_execute <- function(
   verbose = TRUE
 ) {
   on_error <- resolve_on_error(on_error)
+
   # Prepare vectors to store output
   chunk_names <- names(x)
   n <- length(x)
+  errors <- list()
 
   chunk_results <- vector("list", n)
   chunk_meta <- vector("list", n)
@@ -62,9 +64,20 @@ qryflow_execute <- function(
   for (i in seq_along(x)) {
     nm <- chunk_names[i]
     chunk <- x[[nm]]
-    outcome <- execute_chunk(con, chunk, on_error)
+    outcome <- qryflow_handle_chunk(con, chunk)
     chunk_results[[nm]] <- outcome$result
     chunk_meta[[nm]] <- outcome$meta
+
+    if (outcome$meta$status == 'error') {
+      # Check if errors and operate as appropriate
+      errors <- dispatch_on_error(
+        on_error,
+        message = outcome$meta$error_msg,
+        chunk = chunk,
+        workflow = x,
+        errors = errors
+      )
+    }
   }
 
   for (nm in chunk_names) {
@@ -80,7 +93,18 @@ qryflow_execute <- function(
   }
 
   wf_end <- meta_time()
-  wf_status <- "success"
+
+  all_statuses <- vapply(
+    chunk_meta,
+    function(m) if (is.null(m$status)) "skipped" else m$status,
+    character(1)
+  )
+
+  wf_status <- if (all(all_statuses == "success")) {
+    "success"
+  } else {
+    "partial"
+  }
 
   out <- set_meta(
     x,
@@ -90,16 +114,9 @@ qryflow_execute <- function(
     status = wf_status
   )
 
+  if (on_error == "collect") {
+    dispatch_collected_errors(errors, out)
+  }
+
   return(out)
-}
-
-
-execute_chunk <- function(con, chunk, on_error) {
-  # TODO: Process "on_error"
-  output <- qryflow_handle_chunk(
-    con,
-    chunk
-  )
-
-  output
 }

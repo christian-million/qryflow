@@ -1,7 +1,15 @@
 stop_qryflow_chunk <- function(message, chunk, workflow, call = NULL) {
+  message <- paste0(
+    "Chunk '",
+    chunk$name,
+    "' failed with message: '",
+    message,
+    "'"
+  )
   err <- structure(
     list(
       message = message,
+      chunk = chunk,
       call = call,
       workflow = workflow
     ),

@@ -4,7 +4,13 @@
 \alias{qryflow}
 \title{Run a multi-step SQL workflow and return query results}
 \usage{
-qryflow(con, sql, ..., simplify = TRUE)
+qryflow(
+  con,
+  sql,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  simplify = TRUE
+)
 }
 \arguments{
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
@@ -12,6 +18,12 @@ qryflow(con, sql, ..., simplify = TRUE)
 \item{sql}{A file path to a \code{.sql} workflow or a character string containing SQL code.}
 
 \item{...}{Additional arguments passed to \code{\link[=qryflow_run]{qryflow_run()}} or \code{\link[=qryflow_results]{qryflow_results()}}.}
+
+\item{on_error}{Controls behaviour when a chunk fails during execution.
+One of \code{"stop"} (default), \code{"warn"}, or \code{"collecte"}. \code{"stop"} halts
+execution immediately and returns the partially executed workflow. \code{"warn"}
+records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
+all errors from across all chunks and reports them at the end.}
 
 \item{simplify}{Logical; if \code{TRUE} (default), a list of length 1 is simplified to the
 single result object.}

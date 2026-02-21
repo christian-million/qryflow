@@ -4,7 +4,13 @@
 \alias{qryflow_execute}
 \title{Execute a parsed qryflow SQL workflow}
 \usage{
-qryflow_execute(con, x, ..., on_error = c("stop", "continue"), verbose = TRUE)
+qryflow_execute(
+  con,
+  x,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
@@ -14,10 +20,10 @@ qryflow_execute(con, x, ..., on_error = c("stop", "continue"), verbose = TRUE)
 \item{...}{Reserved for future use}
 
 \item{on_error}{Controls behaviour when a chunk fails during execution.
-One of \code{"stop"} (default) or \code{"continue"}. \code{"stop"} halts
-execution immediately and returns the partially executed workflow. \code{"continue"}
-records the error in the chunk's \code{meta} and continues. The global
-default can be set with \code{options(qryflow.on_error = "continue")}.}
+One of \code{"stop"} (default), \code{"warn"}, or \code{"collect"}. \code{"stop"} halts
+execution immediately and returns the partially executed workflow. \code{"warn"}
+records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
+all errors from across all chunks and reports them at the end.}
 
 \item{verbose}{Logical. If \code{TRUE}, emits a message before each chunk
 identifying its name and type, and prints a summary on completion

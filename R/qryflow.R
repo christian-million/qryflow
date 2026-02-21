@@ -15,7 +15,7 @@
 #' @param sql A file path to a `.sql` workflow or a character string containing SQL code.
 #' @param ... Additional arguments passed to [`qryflow_run()`] or [`qryflow_results()`].
 #' @param on_error Controls behaviour when a chunk fails during execution.
-#'   One of `"stop"` (default), `"warn"`, or `"collecte"`. `"stop"` halts
+#'   One of `"stop"` (default), `"warn"`, or `"collect"`. `"stop"` halts
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
@@ -61,7 +61,7 @@ qryflow <- function(
 #' @param sql A character string representing either the path to a `.sql` file or raw SQL content.
 #' @param ... Additional arguments passed to [`qryflow_execute()`].
 #' @param on_error Controls behaviour when a chunk fails during execution.
-#'   One of `"stop"` (default), `"warn"`, or `"collecte"`. `"stop"` halts
+#'   One of `"stop"` (default), `"warn"`, or `"collect"`. `"stop"` halts
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
@@ -126,7 +126,7 @@ qryflow_run <- function(
 #' @export
 qryflow_results <- function(x, ..., simplify = FALSE) {
   if (!inherits(x, "qryflow")) {
-    stop("`x` is not an object of class `qryflow_result`")
+    stop_qryflow("`x` is not an object of class `qryflow`")
   }
 
   chunk_idx <- vapply(x, function(x) inherits(x, "qryflow_chunk"), logical(1))

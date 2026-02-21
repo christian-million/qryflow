@@ -44,6 +44,9 @@ qryflow_execute <- function(
   on_error = c("stop", "warn", "collect"),
   verbose = TRUE
 ) {
+  if (!inherits(x, "qryflow")) {
+    stop_qryflow("`x` is not an object of class `qryflow`")
+  }
   on_error <- resolve_on_error(on_error)
 
   # Prepare vectors to store output
@@ -64,7 +67,7 @@ qryflow_execute <- function(
   for (i in seq_along(x)) {
     nm <- chunk_names[i]
     chunk <- x[[nm]]
-    outcome <- qryflow_handle_chunk(con, chunk)
+    outcome <- qryflow_handle_chunk(con, chunk, ...)
     chunk_results[[nm]] <- outcome$result
     chunk_meta[[nm]] <- outcome$meta
 

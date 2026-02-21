@@ -20,7 +20,7 @@ qryflow(
 \item{...}{Additional arguments passed to \code{\link[=qryflow_run]{qryflow_run()}} or \code{\link[=qryflow_results]{qryflow_results()}}.}
 
 \item{on_error}{Controls behaviour when a chunk fails during execution.
-One of \code{"stop"} (default), \code{"warn"}, or \code{"collecte"}. \code{"stop"} halts
+One of \code{"stop"} (default), \code{"warn"}, or \code{"collect"}. \code{"stop"} halts
 execution immediately and returns the partially executed workflow. \code{"warn"}
 records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
 all errors from across all chunks and reports them at the end.}

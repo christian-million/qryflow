@@ -38,10 +38,10 @@ qryflow_handle_chunk <- function(con, chunk, ...) {
 }
 
 get_qryflow_handler <- function(type) {
-  handler <- get(type, envir = .qryflow_handlers)
+  handler <- get0(type, envir = .qryflow_handlers)
 
   if (is.null(handler)) {
-    stop(paste0("No handler registered for chunk type '", type, "'"))
+    stop_qryflow(paste0("No handler registered for chunk type '", type, "'"))
   }
 
   handler

@@ -9,7 +9,8 @@ qryflow_run(
   sql,
   ...,
   on_error = c("stop", "warn", "collect"),
-  verbose = getOption("qryflow.verbose", FALSE)
+  verbose = getOption("qryflow.verbose", FALSE),
+  default_type = getOption("qryflow.verbose", "query")
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ all errors from across all chunks and reports them at the end.}
 identifying its name and type, and prints a summary on completion
 reporting total chunks run, successes, errors, and elapsed time.
 Defaults to \code{FALSE}. The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
+
+\item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
 \code{options(qryflow.verbose = TRUE)}.}
 }
 \value{

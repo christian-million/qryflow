@@ -26,6 +26,8 @@
 #'   `options(qryflow.verbose = TRUE)`.
 #' @param simplify Logical; if `TRUE` (default), a list of length 1 is simplified to the
 #'   single result object.
+#' @param default_type The default chunk type (defaults to "query"). The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #'
 #' @returns A named list of query results, or a single result if `simplify = TRUE` and only one chunk exists.
 #'
@@ -47,10 +49,18 @@ qryflow <- function(
   ...,
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
-  simplify = TRUE
+  simplify = TRUE,
+  default_type = getOption("qryflow.verbose", "query")
 ) {
   on_error <- validate_on_error(on_error)
-  x <- qryflow_run(con, sql, ..., on_error = on_error, verbose = verbose)
+  x <- qryflow_run(
+    con,
+    sql,
+    ...,
+    on_error = on_error,
+    verbose = verbose,
+    default_type = default_type
+  )
 
   qryflow_results(x, ..., simplify = simplify)
 }
@@ -76,6 +86,8 @@ qryflow <- function(
 #'   identifying its name and type, and prints a summary on completion
 #'   reporting total chunks run, successes, errors, and elapsed time.
 #'   Defaults to `FALSE`. The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
+#' @param default_type The default chunk type (defaults to "query"). The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #'
 #' @returns A list representing the evaluated workflow, containing query results, execution metadata,
@@ -104,10 +116,18 @@ qryflow_run <- function(
   sql,
   ...,
   on_error = c("stop", "warn", "collect"),
-  verbose = getOption("qryflow.verbose", FALSE)
+  verbose = getOption("qryflow.verbose", FALSE),
+  default_type = getOption("qryflow.verbose", "query")
 ) {
   on_error <- validate_on_error(on_error)
-  obj <- qryflow_run_(con, sql, ..., on_error = on_error, verbose = verbose)
+  obj <- qryflow_run_(
+    con,
+    sql,
+    ...,
+    on_error = on_error,
+    verbose = verbose,
+    default_type = default_type
+  )
 
   obj
 }
@@ -155,10 +175,10 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
   return(res)
 }
 
-qryflow_run_ <- function(con, sql, ..., on_error, verbose) {
+qryflow_run_ <- function(con, sql, ..., on_error, verbose, default_type) {
   statement <- read_sql_lines(sql)
 
-  wf <- qryflow_parse(statement)
+  wf <- qryflow_parse(statement, default_type = default_type)
   results <- qryflow_execute(
     con,
     wf,

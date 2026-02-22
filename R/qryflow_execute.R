@@ -17,7 +17,7 @@
 #'   all errors from across all chunks and reports them at the end.
 #' @param verbose Logical. If `TRUE`, emits a message before each chunk
 #'   identifying its name and type, and prints a summary on completion
-#'   reporting total chunks run, successes, errors, skipped, and elapsed time.
+#'   reporting total chunks run, successes, errors, and elapsed time.
 #'   Defaults to `FALSE`. The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #'
@@ -42,7 +42,7 @@ qryflow_execute <- function(
   x,
   ...,
   on_error = c("stop", "warn", "collect"),
-  verbose = TRUE
+  verbose = getOption("qryflow.verbose", FALSE)
 ) {
   if (!inherits(x, "qryflow")) {
     stop_qryflow("`x` is not an object of class `qryflow`")
@@ -62,14 +62,32 @@ qryflow_execute <- function(
 
   # Workflow Start Time
   wf_start <- meta_time()
+  report_workflow_start(n = n, verbose = verbose)
 
   # Avoiding copy-on-modify, by not assigning directly to `qryflow`
   for (i in seq_along(x)) {
     nm <- chunk_names[i]
     chunk <- x[[nm]]
+
+    report_chunk_start(
+      name = nm,
+      type = chunk$type,
+      i = i,
+      n = n,
+      verbose = verbose
+    )
+    Sys.sleep(10)
     outcome <- qryflow_handle_chunk(con, chunk, ...)
     chunk_results[[nm]] <- outcome$result
     chunk_meta[[nm]] <- outcome$meta
+
+    report_chunk_end(
+      name = nm,
+      type = chunk$type,
+      status = outcome$meta$status,
+      duration = outcome$meta$duration,
+      verbose = verbose
+    )
 
     if (outcome$meta$status == 'error') {
       # Check if errors and operate as appropriate
@@ -116,6 +134,8 @@ qryflow_execute <- function(
     duration = meta_duration(wf_start, wf_end),
     status = wf_status
   )
+
+  report_workflow_end(x = out, verbose = verbose)
 
   if (on_error == "collect") {
     dispatch_collected_errors(errors, out)

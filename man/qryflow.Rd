@@ -9,6 +9,7 @@ qryflow(
   sql,
   ...,
   on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE),
   simplify = TRUE
 )
 }
@@ -24,6 +25,12 @@ One of \code{"stop"} (default), \code{"warn"}, or \code{"collect"}. \code{"stop"
 execution immediately and returns the partially executed workflow. \code{"warn"}
 records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
 all errors from across all chunks and reports them at the end.}
+
+\item{verbose}{Logical. If \code{TRUE}, emits a message before each chunk
+identifying its name and type, and prints a summary on completion
+reporting total chunks run, successes, errors, and elapsed time.
+Defaults to \code{FALSE}. The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
 
 \item{simplify}{Logical; if \code{TRUE} (default), a list of length 1 is simplified to the
 single result object.}

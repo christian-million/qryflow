@@ -19,6 +19,11 @@
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
+#' @param verbose Logical. If `TRUE`, emits a message before each chunk
+#'   identifying its name and type, and prints a summary on completion
+#'   reporting total chunks run, successes, errors, and elapsed time.
+#'   Defaults to `FALSE`. The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #' @param simplify Logical; if `TRUE` (default), a list of length 1 is simplified to the
 #'   single result object.
 #'
@@ -41,10 +46,11 @@ qryflow <- function(
   sql,
   ...,
   on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE),
   simplify = TRUE
 ) {
   on_error <- validate_on_error(on_error)
-  x <- qryflow_run(con, sql, ..., on_error = on_error)
+  x <- qryflow_run(con, sql, ..., on_error = on_error, verbose = verbose)
 
   qryflow_results(x, ..., simplify = simplify)
 }
@@ -66,6 +72,11 @@ qryflow <- function(
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
+#' @param verbose Logical. If `TRUE`, emits a message before each chunk
+#'   identifying its name and type, and prints a summary on completion
+#'   reporting total chunks run, successes, errors, and elapsed time.
+#'   Defaults to `FALSE`. The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #'
 #' @returns A list representing the evaluated workflow, containing query results, execution metadata,
 #'   or both, depending on the contents of the SQL script.
@@ -92,10 +103,11 @@ qryflow_run <- function(
   con,
   sql,
   ...,
-  on_error = c("stop", "warn", "collect")
+  on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE)
 ) {
   on_error <- validate_on_error(on_error)
-  obj <- qryflow_run_(con, sql, ..., on_error = on_error)
+  obj <- qryflow_run_(con, sql, ..., on_error = on_error, verbose = verbose)
 
   obj
 }
@@ -143,11 +155,17 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
   return(res)
 }
 
-qryflow_run_ <- function(con, sql, ..., on_error) {
+qryflow_run_ <- function(con, sql, ..., on_error, verbose) {
   statement <- read_sql_lines(sql)
 
   wf <- qryflow_parse(statement)
-  results <- qryflow_execute(con, wf, ..., on_error = on_error)
+  results <- qryflow_execute(
+    con,
+    wf,
+    ...,
+    on_error = on_error,
+    verbose = verbose
+  )
 
   return(results)
 }

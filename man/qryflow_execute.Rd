@@ -9,7 +9,7 @@ qryflow_execute(
   x,
   ...,
   on_error = c("stop", "warn", "collect"),
-  verbose = TRUE
+  verbose = getOption("qryflow.verbose", FALSE)
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ all errors from across all chunks and reports them at the end.}
 
 \item{verbose}{Logical. If \code{TRUE}, emits a message before each chunk
 identifying its name and type, and prints a summary on completion
-reporting total chunks run, successes, errors, skipped, and elapsed time.
+reporting total chunks run, successes, errors, and elapsed time.
 Defaults to \code{FALSE}. The global default can be set with
 \code{options(qryflow.verbose = TRUE)}.}
 }

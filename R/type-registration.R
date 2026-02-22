@@ -62,3 +62,23 @@ ls_qryflow_types <- function() {
 
   return(x)
 }
+
+is_valid_type <- function(type) {
+  valid <- ls_qryflow_types()
+  isTRUE(type %in% valid)
+}
+
+validate_qryflow_type <- function(type) {
+  first_type <- type[1]
+
+  if (!is_valid_type(first_type)) {
+    stop_qryflow(
+      sprintf(
+        "'type' must be one of %s, not %s.",
+        paste(valid, collapse = ", "),
+        first_type
+      )
+    )
+  }
+  first_type
+}

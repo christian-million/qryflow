@@ -42,3 +42,27 @@ stop_qryflow <- function(message, workflow = NULL, call = NULL, ...) {
   )
   stop(err)
 }
+
+warn_qryflow <- function(message, call = NULL, ...) {
+  wrn <- structure(
+    list(
+      message = message,
+      call = call,
+      ...
+    ),
+    class = c("qryflow_warning", "warning", "condition")
+  )
+  warning(wrn)
+}
+
+message_qryflow <- function(message, call = NULL, ...) {
+  msg <- structure(
+    list(
+      message = message,
+      call = call,
+      ...
+    ),
+    class = c("qryflow_message", "message", "condition")
+  )
+  message(msg)
+}

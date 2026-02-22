@@ -76,7 +76,7 @@ qryflow_execute <- function(
       n = n,
       verbose = verbose
     )
-    Sys.sleep(10)
+
     outcome <- qryflow_handle_chunk(con, chunk, ...)
     chunk_results[[nm]] <- outcome$result
     chunk_meta[[nm]] <- outcome$meta

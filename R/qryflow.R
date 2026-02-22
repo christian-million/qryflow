@@ -19,8 +19,15 @@
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
+#' @param verbose Logical. If `TRUE`, emits a message before each chunk
+#'   identifying its name and type, and prints a summary on completion
+#'   reporting total chunks run, successes, errors, and elapsed time.
+#'   Defaults to `FALSE`. The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #' @param simplify Logical; if `TRUE` (default), a list of length 1 is simplified to the
 #'   single result object.
+#' @param default_type The default chunk type (defaults to "query"). The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #'
 #' @returns A named list of query results, or a single result if `simplify = TRUE` and only one chunk exists.
 #'
@@ -41,9 +48,19 @@ qryflow <- function(
   sql,
   ...,
   on_error = c("stop", "warn", "collect"),
-  simplify = TRUE
+  verbose = getOption("qryflow.verbose", FALSE),
+  simplify = TRUE,
+  default_type = getOption("qryflow.verbose", "query")
 ) {
-  x <- qryflow_run(con, sql, ..., on_error = on_error)
+  on_error <- validate_on_error(on_error)
+  x <- qryflow_run(
+    con,
+    sql,
+    ...,
+    on_error = on_error,
+    verbose = verbose,
+    default_type = default_type
+  )
 
   qryflow_results(x, ..., simplify = simplify)
 }
@@ -65,6 +82,13 @@ qryflow <- function(
 #'   execution immediately and returns the partially executed workflow. `"warn"`
 #'   records the error in the chunk's `meta`, signaling immediately. `"collect"` gathers
 #'   all errors from across all chunks and reports them at the end.
+#' @param verbose Logical. If `TRUE`, emits a message before each chunk
+#'   identifying its name and type, and prints a summary on completion
+#'   reporting total chunks run, successes, errors, and elapsed time.
+#'   Defaults to `FALSE`. The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
+#' @param default_type The default chunk type (defaults to "query"). The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #'
 #' @returns A list representing the evaluated workflow, containing query results, execution metadata,
 #'   or both, depending on the contents of the SQL script.
@@ -91,9 +115,19 @@ qryflow_run <- function(
   con,
   sql,
   ...,
-  on_error = c("stop", "warn", "collect")
+  on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE),
+  default_type = getOption("qryflow.verbose", "query")
 ) {
-  obj <- qryflow_run_(con, sql, ..., on_error = on_error)
+  on_error <- validate_on_error(on_error)
+  obj <- qryflow_run_(
+    con,
+    sql,
+    ...,
+    on_error = on_error,
+    verbose = verbose,
+    default_type = default_type
+  )
 
   obj
 }
@@ -141,35 +175,17 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
   return(res)
 }
 
-qryflow_run_ <- function(con, sql, ..., on_error) {
+qryflow_run_ <- function(con, sql, ..., on_error, verbose, default_type) {
   statement <- read_sql_lines(sql)
 
-  wf <- qryflow_parse(statement)
-  results <- qryflow_execute(con, wf, ..., on_error = on_error)
+  wf <- qryflow_parse(statement, default_type = default_type)
+  results <- qryflow_execute(
+    con,
+    wf,
+    ...,
+    on_error = on_error,
+    verbose = verbose
+  )
 
   return(results)
-}
-
-#' Access the default qryflow chunk type
-#'
-#' @description
-#' Retrieves the value from the option `qryflow.default.type`, if set. Otherwise returns
-#' "query", which is the officially supported default type. If any value is supplied
-#' to the function, it returns that value.
-#'
-#' @param type Optional. The type you want to return.
-#'
-#' @returns Character. If set, result from `qryflow.default.type` option, otherwise "query" or value passed to `type`
-#'
-#' @examples
-#' x <- getOption("qryflow.default.type", "query")
-#'
-#' y <- qryflow_default_type()
-#'
-#' identical(x, y)
-#' @export
-qryflow_default_type <- function(
-  type = getOption("qryflow.default.type", "query")
-) {
-  return(type)
 }

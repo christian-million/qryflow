@@ -36,7 +36,6 @@ reference:
   - extract_all_tags
   - subset_tags
   - new_qryflow_chunk
-  - qryflow_default_type
 
 - title: Example Utilities
   desc: >

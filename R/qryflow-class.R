@@ -70,25 +70,3 @@ print.qryflow <- function(x, ...) {
   cat("\n")
   invisible(x)
 }
-
-# ---- Internal print helpers ----
-
-fmt_rule <- function(title) {
-  width <- getOption("width", 80)
-  prefix <- paste0("\u2500\u2500 ", title, " ")
-  rule_width <- max(0, width - nchar(prefix))
-  paste0(prefix, strrep("\u2500", rule_width))
-}
-
-fmt_chunk_status <- function(status) {
-  if (is.null(status)) {
-    return("  pending  ")
-  }
-  switch(
-    status,
-    success = "\u2713 success",
-    error = "\u2717 error  ",
-    skipped = "\u2013 skipped",
-    pending = "  pending"
-  )
-}

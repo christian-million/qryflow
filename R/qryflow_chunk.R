@@ -86,18 +86,6 @@ print.qryflow_chunk <- function(x, ...) {
   invisible(x)
 }
 
-# ---- Internal helper ----
-
-fmt_truncation <- function(n_remaining) {
-  paste0(
-    "\u2504\u2504 ... and ",
-    n_remaining,
-    " more line",
-    if (n_remaining > 1) "s" else "",
-    " \u2504\u2504"
-  )
-}
-
 #' @export
 as.list.qryflow_chunk <- function(x, ...) {
   unclass(x)

@@ -1,4 +1,4 @@
-resolve_on_error <- function(on_error) {
+validate_on_error <- function(on_error) {
   valid <- c("stop", "warn", "collect")
 
   first_on_error <- on_error[1]

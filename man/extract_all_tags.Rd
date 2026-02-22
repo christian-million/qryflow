@@ -39,5 +39,5 @@ tags <- extract_all_tags(chunk$sql)
 subset_tags(tags, keep = c("query"))
 }
 \seealso{
-\code{\link[=qryflow_parse]{qryflow_parse()}}, \code{\link[=ls_qryflow_types]{ls_qryflow_types()}}, \code{\link[=qryflow_default_type]{qryflow_default_type()}}
+\code{\link[=qryflow_parse]{qryflow_parse()}}, \code{\link[=ls_qryflow_types]{ls_qryflow_types()}}
 }

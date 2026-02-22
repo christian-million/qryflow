@@ -75,7 +75,7 @@ validate_qryflow_type <- function(type) {
     stop_qryflow(
       sprintf(
         "'type' must be one of %s, not %s.",
-        paste(valid, collapse = ", "),
+        paste(ls_qryflow_types(), collapse = ", "),
         first_type
       )
     )

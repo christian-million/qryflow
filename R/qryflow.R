@@ -169,27 +169,3 @@ qryflow_run_ <- function(con, sql, ..., on_error, verbose) {
 
   return(results)
 }
-
-#' Access the default qryflow chunk type
-#'
-#' @description
-#' Retrieves the value from the option `qryflow.default.type`, if set. Otherwise returns
-#' "query", which is the officially supported default type. If any value is supplied
-#' to the function, it returns that value.
-#'
-#' @param type Optional. The type you want to return.
-#'
-#' @returns Character. If set, result from `qryflow.default.type` option, otherwise "query" or value passed to `type`
-#'
-#' @examples
-#' x <- getOption("qryflow.default.type", "query")
-#'
-#' y <- qryflow_default_type()
-#'
-#' identical(x, y)
-#' @export
-qryflow_default_type <- function(
-  type = getOption("qryflow.default.type", "query")
-) {
-  return(type)
-}

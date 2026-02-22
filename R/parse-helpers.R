@@ -52,7 +52,7 @@ is_tag_line <- function(line) {
 #' chunk <- parsed[[1]]
 #' tags <- extract_all_tags(chunk$sql)
 #' subset_tags(tags, keep = c("query"))
-#' @seealso [qryflow_parse()], [ls_qryflow_types()], [qryflow_default_type()]
+#' @seealso [qryflow_parse()], [ls_qryflow_types()]
 #'
 #' @export
 extract_all_tags <- function(

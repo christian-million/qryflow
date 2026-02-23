@@ -47,38 +47,23 @@ parse_qryflow_chunks <- function(sql, default_type) {
 split_chunks <- function(lines) {
   # Find all lines that are tag lines
   tag_lines <- is_tag_line(lines)
+  breaking <- is_block_breaking(lines)
 
-  # Find the starting lines of each tag block
-  chunk_starts <- c()
-  in_tag_block <- FALSE
+  prev_breaking <- c(TRUE, breaking[-length(breaking)])
+  chunk_starts <- which(tag_lines & prev_breaking)
 
-  for (i in seq_along(lines)) {
-    if (tag_lines[i] && !in_tag_block) {
-      chunk_starts <- c(chunk_starts, i)
-      in_tag_block <- TRUE
-    } else if (!tag_lines[i]) {
-      in_tag_block <- FALSE
-    }
+  if (length(chunk_starts) == 0L || chunk_starts[1L] != 1L) {
+    chunk_starts <- c(1L, chunk_starts)
   }
 
-  # Always start from line 1 if it isn't already part of a tagged chunk
-  if (length(chunk_starts) == 0 || chunk_starts[1] != 1) {
-    chunk_starts <- c(1, chunk_starts)
-  }
-
-  # Calculate end points of chunks
-  chunk_ends <- c(chunk_starts[-1] - 1, length(lines))
+  chunk_ends <- c(chunk_starts[-1L] - 1L, length(lines))
 
   chunks <- vector("list", length(chunk_starts))
-
   for (j in seq_along(chunk_starts)) {
-    start <- chunk_starts[j]
-    end <- chunk_ends[j]
-    chunk_lines <- lines[start:end]
-    chunks[[j]] <- chunk_lines
+    chunks[[j]] <- lines[chunk_starts[j]:chunk_ends[j]]
   }
 
-  return(chunks)
+  chunks
 }
 
 # Parses an individual chunk
@@ -99,18 +84,19 @@ parse_single_chunk <- function(chunk) {
   rm_tags <- unique(c("name", "type", type_nm))
   tags <- subset_tags(all_tags, rm_tags, negate = TRUE)
 
+  body_start <- which(is_block_breaking(lines))[1L]
+  body_lines <- if (is.na(body_start)) {
+    character(0L)
+  } else {
+    lines[body_start:length(lines)]
+  }
   sql_txt <- collapse_sql_lines(lines[!is_tag_line(lines)])
 
   list(type = type, name = name, sql = sql_txt, tags = tags)
 }
 
 parse_chunks <- function(chunks, default_type) {
-  src <- vector("list", length(chunks))
-
-  for (i in seq_along(src)) {
-    src[[i]] <- parse_single_chunk(chunks[[i]])
-  }
-
+  src <- lapply(chunks, parse_single_chunk)
   src <- resolve_chunk_names(src)
   src <- resolve_chunk_types(src, default_type)
 

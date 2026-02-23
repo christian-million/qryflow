@@ -7,14 +7,41 @@ qryflow_handle_chunk <- function(con, chunk, ...) {
     stop(paste0("No handler registered for chunk type '", chunk$type, "'"))
   }
 
-  handler(con, chunk, ...)
+  result <- NULL
+  error_msg <- NULL
+  status <- NULL
+
+  start_time <- meta_time()
+  tryCatch(
+    {
+      result <- handler(con, chunk, ...)
+      status <- "success"
+    },
+    error = function(cnd) {
+      error_msg <<- conditionMessage(cnd)
+      NULL
+    }
+  )
+  end_time <- meta_time()
+  status <- if (is.null(error_msg)) "success" else "error"
+
+  list(
+    result = result,
+    meta = list(
+      start_time = start_time,
+      end_time = end_time,
+      duration = meta_duration(start_time, end_time),
+      status = status,
+      error_msg = error_msg
+    )
+  )
 }
 
 get_qryflow_handler <- function(type) {
-  handler <- get(type, envir = .qryflow_handlers)
+  handler <- get0(type, envir = .qryflow_handlers)
 
   if (is.null(handler)) {
-    stop(paste0("No handler registered for chunk type '", type, "'"))
+    stop_qryflow(paste0("No handler registered for chunk type '", type, "'"))
   }
 
   handler

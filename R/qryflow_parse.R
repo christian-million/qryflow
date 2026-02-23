@@ -7,7 +7,9 @@
 #' preprocess or inspect the structure of a SQL workflow.
 #'
 #' @param sql A file path to a SQL workflow file, or a character vector containing SQL lines.
-#' @param default_type The default chunk type (defaults to "query")
+#' @param ... Reserved for future use.
+#' @param default_type The default chunk type (defaults to "query"). The global default can be set with
+#'   `options(qryflow.verbose = TRUE)`.
 #'
 #' @returns An object of class `qryflow_workflow`, which is a structured list of SQL chunks and
 #'   metadata.
@@ -19,17 +21,22 @@
 #'
 #' parsed <- qryflow_parse(filepath)
 #' @export
-qryflow_parse <- function(sql, default_type = "query") {
+qryflow_parse <- function(
+  sql,
+  ...,
+  default_type = getOption("qryflow.default.type", "query")
+) {
   statement <- read_sql_lines(sql)
+  default_type <- validate_qryflow_type(default_type)
 
   chunks <- parse_qryflow_chunks(statement, default_type)
 
-  new_qryflow_workflow(chunks = chunks, source = collapse_sql_lines(statement))
+  new_qryflow(chunks = chunks, source = collapse_sql_lines(statement))
 }
 
-parse_qryflow_chunks <- function(sql, default_type = "query") {
-  statement <- read_sql_lines(sql)
-  split <- split_chunks(statement)
+parse_qryflow_chunks <- function(sql, default_type) {
+  sql <- read_sql_lines(sql)
+  split <- split_chunks(sql)
   parsed_chunks <- parse_chunks(split, default_type)
 
   return(parsed_chunks)
@@ -40,85 +47,58 @@ parse_qryflow_chunks <- function(sql, default_type = "query") {
 split_chunks <- function(lines) {
   # Find all lines that are tag lines
   tag_lines <- is_tag_line(lines)
+  breaking <- is_block_breaking(lines)
 
-  # Find the starting lines of each tag block
-  chunk_starts <- c()
-  in_tag_block <- FALSE
+  prev_breaking <- c(TRUE, breaking[-length(breaking)])
+  chunk_starts <- which(tag_lines & prev_breaking)
 
-  for (i in seq_along(lines)) {
-    if (tag_lines[i] && !in_tag_block) {
-      chunk_starts <- c(chunk_starts, i)
-      in_tag_block <- TRUE
-    } else if (!tag_lines[i]) {
-      in_tag_block <- FALSE
-    }
+  if (length(chunk_starts) == 0L || chunk_starts[1L] != 1L) {
+    chunk_starts <- c(1L, chunk_starts)
   }
 
-  # Always start from line 1 if it isn't already part of a tagged chunk
-  if (length(chunk_starts) == 0 || chunk_starts[1] != 1) {
-    chunk_starts <- c(1, chunk_starts)
-  }
-
-  # Calculate end points of chunks
-  chunk_ends <- c(chunk_starts[-1] - 1, length(lines))
+  chunk_ends <- c(chunk_starts[-1L] - 1L, length(lines))
 
   chunks <- vector("list", length(chunk_starts))
-
   for (j in seq_along(chunk_starts)) {
-    start <- chunk_starts[j]
-    end <- chunk_ends[j]
-    chunk_lines <- lines[start:end]
-    chunks[[j]] <- chunk_lines
+    chunks[[j]] <- lines[chunk_starts[j]:chunk_ends[j]]
   }
 
-  return(chunks)
+  chunks
 }
 
 # Parses an individual chunk
 # Handle no information
-parse_single_chunk <- function(chunk, default_type = "query") {
-  lines <- read_sql_lines(chunk)
+parse_single_chunk <- function(chunk) {
+  lines <- chunk
   all_tags <- extract_all_tags(lines)
 
   name <- all_tags$name
-  type <- all_tags$type
-
-  # Handle Shortcut Tags (exec, query)
-  if (is.null(type)) {
-    registered_types <- ls_qryflow_types()
-    tags_nm <- names(all_tags)
-
-    type <- tags_nm[which(tags_nm %in% registered_types)][1]
-
-    if (is.null(type) || is.na(type)) {
-      type <- default_type
-    }
-  }
-
-  # TODO: validate type
-  # TODO: user_feedback
+  type <- parse_chunk_type(all_tags)
 
   if (is.null(name)) {
     name <- all_tags[[type]]
   }
 
   # Get all tags not related to name or type
-  rm_tags <- unique(c("name", "type", type))
+  type_nm <- if (is.na(type)) NULL else type
+  rm_tags <- unique(c("name", "type", type_nm))
   tags <- subset_tags(all_tags, rm_tags, negate = TRUE)
 
+  body_start <- which(is_block_breaking(lines))[1L]
+  body_lines <- if (is.na(body_start)) {
+    character(0L)
+  } else {
+    lines[body_start:length(lines)]
+  }
   sql_txt <- collapse_sql_lines(lines[!is_tag_line(lines)])
 
   list(type = type, name = name, sql = sql_txt, tags = tags)
 }
 
-parse_chunks <- function(chunks, default_type = "query") {
-  src <- vector("list", length(chunks))
-
-  for (i in seq_along(src)) {
-    src[[i]] <- parse_single_chunk(chunks[[i]], default_type)
-  }
-
+parse_chunks <- function(chunks, default_type) {
+  src <- lapply(chunks, parse_single_chunk)
   src <- resolve_chunk_names(src)
+  src <- resolve_chunk_types(src, default_type)
 
   parsed_chunks <- vector("list", length(src))
 
@@ -127,7 +107,8 @@ parse_chunks <- function(chunks, default_type = "query") {
       type = src[[i]]$type,
       name = src[[i]]$name,
       sql = src[[i]]$sql,
-      tags = src[[i]]$tags
+      tags = src[[i]]$tags,
+      meta = init_meta(source = paste0(chunks[[i]], collapse = "\n"))
     )
   }
 
@@ -155,10 +136,9 @@ resolve_chunk_names <- function(chunks) {
   defined_names <- user_names[!is.na(user_names)]
   duplicates <- defined_names[duplicated(defined_names)]
   if (length(duplicates) > 0) {
-    stop(
+    stop_qryflow(
       "Duplicate chunk names found and will overwrite each other in results: ",
-      paste(unique(duplicates), collapse = ", "),
-      call. = FALSE
+      paste(unique(duplicates), collapse = ", ")
     )
   }
 
@@ -175,11 +155,66 @@ resolve_chunk_names <- function(chunks) {
       }
       chunks[[i]]$name <- candidate
       defined_names <- c(defined_names, candidate)
-      # TODO: user_feedback
-      # message("Chunk ", i, " unnamed. Assigned '", candidate, "'.")
+      message_qryflow(paste0(
+        "Chunk ",
+        i,
+        " unnamed. Assigned: '",
+        candidate,
+        "'."
+      ))
       auto_index <- auto_index + 1
     }
   }
 
   return(chunks)
+}
+
+resolve_chunk_types <- function(chunks, default_type) {
+  registered_types <- ls_qryflow_types()
+
+  for (i in seq_along(chunks)) {
+    type <- chunks[[i]]$type
+
+    # Assign default type when none was parsed
+    if (is.na(type)) {
+      chunks[[i]]$type <- default_type
+      message_qryflow(paste0(
+        "Chunk '",
+        chunks[[i]]$name,
+        "' has no type. ",
+        "Assigned default type '",
+        default_type,
+        "'."
+      ))
+
+      # Warn when type is not a registered handler
+    } else if (!type %in% registered_types) {
+      warn_qryflow(paste0(
+        "Chunk '",
+        chunks[[i]]$name,
+        "' has unrecognised type '",
+        type,
+        "'. No handler is currently registered for this type."
+      ))
+    }
+  }
+
+  return(chunks)
+}
+
+parse_chunk_type <- function(all_tags) {
+  type <- all_tags$type
+
+  # Handle Shortcut Tags (exec, query)
+  if (is.null(type)) {
+    registered_types <- ls_qryflow_types()
+    tags_nm <- names(all_tags)
+
+    type <- tags_nm[which(tags_nm %in% registered_types)][1]
+
+    if (is.null(type) || is.na(type)) {
+      type <- NA_character_
+    }
+  }
+  type
 }

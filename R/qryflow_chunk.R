@@ -9,6 +9,7 @@
 #' @param sql SQL statement associated with chunk
 #' @param tags Optional, additional tags included in chunk
 #' @param results Optional, filled in after chunk execution
+#' @param meta Optional, stores meta data on the object
 #'
 #' @returns An list-like object of class `qryflow_chunk`
 #'
@@ -20,7 +21,8 @@ new_qryflow_chunk <- function(
   name = character(),
   sql = character(),
   tags = NULL,
-  results = NULL
+  results = NULL,
+  meta = init_meta()
 ) {
   x <- list(
     type = type,
@@ -30,19 +32,58 @@ new_qryflow_chunk <- function(
     results = results
   )
 
-  structure(x, class = "qryflow_chunk")
+  structure(x, meta = meta, class = "qryflow_chunk")
 }
 
 #' @export
 print.qryflow_chunk <- function(x, ...) {
-  cat(paste0("<qryflow_chunk> ", x$name, "\n\n"))
-  cat(paste0("[", x$type, "]\n"))
-  if (length(x$tags) > 0) {
-    cat("tags:", paste0(x$tags, collapse = ", "))
-    cat("\n")
+  meta <- qryflow_meta(x)
+
+  # Header
+  cat(fmt_rule(paste0("qryflow_chunk: ", x$name)), "\n")
+
+  # Summary Line
+  status_str <- fmt_chunk_status(meta$status)
+  duration_str <- if (!is.null(meta$duration)) {
+    paste0(" | duration: ", fmt_duration(meta$duration))
+  } else {
+    ""
   }
+
+  cat("  type: ", x$type, " | ", status_str, duration_str, "\n", sep = "")
+
+  # Tags
+  if (length(x$tags) > 0) {
+    tag_str <- paste(
+      mapply(function(k, v) paste0(k, ": ", v), names(x$tags), x$tags),
+      collapse = " | "
+    )
+    cat("  tags: ", tag_str, "\n", sep = "")
+  }
+
+  # Error Message
+  if (!is.null(meta$error_message)) {
+    cat("  error: ", meta$error_message, "\n", sep = "")
+  }
+
+  # SQL Preview
   cat("\n")
-  cat(substr(x$sql, 1, 100), "...\n")
+
+  sql_lines <- strsplit(x$sql, "\n")[[1]]
+  sql_lines <- sql_lines[nzchar(trimws(sql_lines))] # drop blank lines
+  n_lines <- length(sql_lines)
+  preview <- min(8L, n_lines)
+
+  for (line in sql_lines[seq_len(preview)]) {
+    cat("  ", line, "\n", sep = "")
+  }
+
+  if (n_lines > 8L) {
+    cat("  ", fmt_truncation(n_lines - 8L), "\n", sep = "")
+  }
+
+  cat("\n")
+  invisible(x)
 }
 
 #' @export

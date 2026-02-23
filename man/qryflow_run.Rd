@@ -4,7 +4,14 @@
 \alias{qryflow_run}
 \title{Parse and execute a tagged SQL workflow}
 \usage{
-qryflow_run(con, sql, ...)
+qryflow_run(
+  con,
+  sql,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE),
+  default_type = getOption("qryflow.verbose", "query")
+)
 }
 \arguments{
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
@@ -12,6 +19,21 @@ qryflow_run(con, sql, ...)
 \item{sql}{A character string representing either the path to a \code{.sql} file or raw SQL content.}
 
 \item{...}{Additional arguments passed to \code{\link[=qryflow_execute]{qryflow_execute()}}.}
+
+\item{on_error}{Controls behaviour when a chunk fails during execution.
+One of \code{"stop"} (default), \code{"warn"}, or \code{"collect"}. \code{"stop"} halts
+execution immediately and returns the partially executed workflow. \code{"warn"}
+records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
+all errors from across all chunks and reports them at the end.}
+
+\item{verbose}{Logical. If \code{TRUE}, emits a message before each chunk
+identifying its name and type, and prints a summary on completion
+reporting total chunks run, successes, errors, and elapsed time.
+Defaults to \code{FALSE}. The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
+
+\item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
 }
 \value{
 A list representing the evaluated workflow, containing query results, execution metadata,

@@ -4,12 +4,19 @@
 \alias{qryflow_parse}
 \title{Parse a SQL workflow into tagged chunks}
 \usage{
-qryflow_parse(sql, default_type = "query")
+qryflow_parse(
+  sql,
+  ...,
+  default_type = getOption("qryflow.default.type", "query")
+)
 }
 \arguments{
 \item{sql}{A file path to a SQL workflow file, or a character vector containing SQL lines.}
 
-\item{default_type}{The default chunk type (defaults to "query")}
+\item{...}{Reserved for future use.}
+
+\item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
 }
 \value{
 An object of class \code{qryflow_workflow}, which is a structured list of SQL chunks and

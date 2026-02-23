@@ -12,10 +12,6 @@ Character vector of registered chunk types
 \description{
 Helper function to access the names of the currently registered chunk types.
 }
-\details{
-\code{ls_qryflow_types} is a shortcut for \code{ls_qryflow_handlers}. It's expected that a handler
-exists for each type.
-}
 \examples{
 ls_qryflow_types()
 }

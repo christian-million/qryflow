@@ -9,7 +9,8 @@ new_qryflow_chunk(
   name = character(),
   sql = character(),
   tags = NULL,
-  results = NULL
+  results = NULL,
+  meta = init_meta()
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ new_qryflow_chunk(
 \item{tags}{Optional, additional tags included in chunk}
 
 \item{results}{Optional, filled in after chunk execution}
+
+\item{meta}{Optional, stores meta data on the object}
 }
 \value{
 An list-like object of class \code{qryflow_chunk}

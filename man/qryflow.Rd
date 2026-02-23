@@ -4,7 +4,15 @@
 \alias{qryflow}
 \title{Run a multi-step SQL workflow and return query results}
 \usage{
-qryflow(con, sql, ..., simplify = TRUE)
+qryflow(
+  con,
+  sql,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE),
+  simplify = TRUE,
+  default_type = getOption("qryflow.verbose", "query")
+)
 }
 \arguments{
 \item{con}{A database connection from \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
@@ -13,8 +21,23 @@ qryflow(con, sql, ..., simplify = TRUE)
 
 \item{...}{Additional arguments passed to \code{\link[=qryflow_run]{qryflow_run()}} or \code{\link[=qryflow_results]{qryflow_results()}}.}
 
+\item{on_error}{Controls behaviour when a chunk fails during execution.
+One of \code{"stop"} (default), \code{"warn"}, or \code{"collect"}. \code{"stop"} halts
+execution immediately and returns the partially executed workflow. \code{"warn"}
+records the error in the chunk's \code{meta}, signaling immediately. \code{"collect"} gathers
+all errors from across all chunks and reports them at the end.}
+
+\item{verbose}{Logical. If \code{TRUE}, emits a message before each chunk
+identifying its name and type, and prints a summary on completion
+reporting total chunks run, successes, errors, and elapsed time.
+Defaults to \code{FALSE}. The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
+
 \item{simplify}{Logical; if \code{TRUE} (default), a list of length 1 is simplified to the
 single result object.}
+
+\item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
+\code{options(qryflow.verbose = TRUE)}.}
 }
 \value{
 A named list of query results, or a single result if \code{simplify = TRUE} and only one chunk exists.

@@ -45,9 +45,9 @@ obj <- qryflow_run(con, path)
 
 # A qryflow_result object
 class(obj)
-#> [1] "qryflow_result"
+#> [1] "qryflow"
 names(obj)
-#> [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"   "meta"
+#> [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"
 
 # Each element is a qryflow_chunk
 class(obj$df_mtcars)
@@ -85,16 +85,11 @@ chunks.
 workflow <- qryflow_parse(path)
 
 class(workflow)
-#> [1] "qryflow_workflow"
+#> [1] "qryflow"
 length(workflow$chunks)
-#> [1] 4
+#> [1] 0
 workflow$chunks[[1]]
-#> <qryflow_chunk> drop_cyl_6
-#> 
-#> [exec]
-#> 
-#> DROP TABLE IF EXISTS cyl_6;
-#>  ...
+#> NULL
 ```
 
 Each chunk is a structured object of class `qryflow_chunk`, containing:
@@ -112,9 +107,9 @@ Each chunk is a structured object of class `qryflow_chunk`, containing:
 ``` r
 executed <- qryflow_execute(con, workflow, source = "mtcars.sql")
 class(executed)
-#> [1] "qryflow_result"
+#> [1] "qryflow"
 names(executed)
-#> [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"   "meta"
+#> [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"
 ```
 
 Execution results are stored inside each chunk object, accessible via
@@ -141,23 +136,20 @@ head(executed$df_mtcars$results)
 executed$df_mtcars$tags
 #> list()
 executed$meta$timings
-#>                 chunk       start_time         end_time
-#> 1          drop_cyl_6       1771560758       1771560758
-#> 2          prep_cyl_6       1771560758       1771560758
-#> 3           df_mtcars       1771560758       1771560758
-#> 4            df_cyl_6       1771560758       1771560758
-#> 5 overall_qryflow_run 1771560757.91065 1771560757.91232
+#> NULL
 executed$meta$source
-#> [1] "mtcars.sql"
+#> NULL
 ```
 
 You can also use:
 
 ``` r
 summary(executed)
-#> <qryflow_result>
-#> Chunks executed: 4 
-#> Available objects: drop_cyl_6, prep_cyl_6, df_mtcars, df_cyl_6, meta
+#>            Length Class         Mode
+#> drop_cyl_6 5      qryflow_chunk list
+#> prep_cyl_6 5      qryflow_chunk list
+#> df_mtcars  5      qryflow_chunk list
+#> df_cyl_6   5      qryflow_chunk list
 ```
 
 ## Understanding the Underlying Objects

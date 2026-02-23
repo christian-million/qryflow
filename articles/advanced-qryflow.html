@@ -106,9 +106,9 @@ results).</p>
 <span></span>
 <span><span class="co"># A qryflow_result object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "qryflow_result"</span></span>
+<span><span class="co">#&gt; [1] "qryflow"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"   "meta"</span></span>
+<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"</span></span>
 <span></span>
 <span><span class="co"># Each element is a qryflow_chunk</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">df_mtcars</span><span class="op">)</span></span>
@@ -141,16 +141,11 @@ chunks.</p>
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow_parse.html">qryflow_parse</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "qryflow_workflow"</span></span>
+<span><span class="co">#&gt; [1] "qryflow"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">chunks</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
 <span><span class="va">workflow</span><span class="op">$</span><span class="va">chunks</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; &lt;qryflow_chunk&gt; drop_cyl_6</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [exec]</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; DROP TABLE IF EXISTS cyl_6;</span></span>
-<span><span class="co">#&gt;  ...</span></span></code></pre></div>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
 <p>Each chunk is a structured object of class
 <code>qryflow_chunk</code>, containing:</p>
 <ul>
@@ -166,9 +161,9 @@ chunks.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">executed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow_execute.html">qryflow_execute</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">workflow</span>, source <span class="op">=</span> <span class="st">"mtcars.sql"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">executed</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "qryflow_result"</span></span>
+<span><span class="co">#&gt; [1] "qryflow"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">executed</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"   "meta"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"</span></span></code></pre></div>
 <p>Execution results are stored inside each chunk object, accessible via
 <code>chunk$results</code>.</p>
 </div>
@@ -191,20 +186,17 @@ behaves like a list of chunks plus metadata.</p>
 <span><span class="va">executed</span><span class="op">$</span><span class="va">df_mtcars</span><span class="op">$</span><span class="va">tags</span></span>
 <span><span class="co">#&gt; list()</span></span>
 <span><span class="va">executed</span><span class="op">$</span><span class="va">meta</span><span class="op">$</span><span class="va">timings</span></span>
-<span><span class="co">#&gt;                 chunk       start_time         end_time</span></span>
-<span><span class="co">#&gt; 1          drop_cyl_6       1771560758       1771560758</span></span>
-<span><span class="co">#&gt; 2          prep_cyl_6       1771560758       1771560758</span></span>
-<span><span class="co">#&gt; 3           df_mtcars       1771560758       1771560758</span></span>
-<span><span class="co">#&gt; 4            df_cyl_6       1771560758       1771560758</span></span>
-<span><span class="co">#&gt; 5 overall_qryflow_run 1771560757.91065 1771560757.91232</span></span>
+<span><span class="co">#&gt; NULL</span></span>
 <span><span class="va">executed</span><span class="op">$</span><span class="va">meta</span><span class="op">$</span><span class="va">source</span></span>
-<span><span class="co">#&gt; [1] "mtcars.sql"</span></span></code></pre></div>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
 <p>You can also use:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">executed</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;qryflow_result&gt;</span></span>
-<span><span class="co">#&gt; Chunks executed: 4 </span></span>
-<span><span class="co">#&gt; Available objects: drop_cyl_6, prep_cyl_6, df_mtcars, df_cyl_6, meta</span></span></code></pre></div>
+<span><span class="co">#&gt;            Length Class         Mode</span></span>
+<span><span class="co">#&gt; drop_cyl_6 5      qryflow_chunk list</span></span>
+<span><span class="co">#&gt; prep_cyl_6 5      qryflow_chunk list</span></span>
+<span><span class="co">#&gt; df_mtcars  5      qryflow_chunk list</span></span>
+<span><span class="co">#&gt; df_cyl_6   5      qryflow_chunk list</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="understanding-the-underlying-objects">Understanding the Underlying Objects<a class="anchor" aria-label="anchor" href="#understanding-the-underlying-objects"></a>

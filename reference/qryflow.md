@@ -11,7 +11,15 @@ names correspond to the `@query` tags.
 ## Usage
 
 ``` r
-qryflow(con, sql, ..., simplify = TRUE)
+qryflow(
+  con,
+  sql,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE),
+  simplify = TRUE,
+  default_type = getOption("qryflow.verbose", "query")
+)
 ```
 
 ## Arguments
@@ -33,10 +41,31 @@ qryflow(con, sql, ..., simplify = TRUE)
   or
   [`qryflow_results()`](https://christian-million.github.io/qryflow/reference/qryflow_results.md).
 
+- on_error:
+
+  Controls behaviour when a chunk fails during execution. One of
+  `"stop"` (default), `"warn"`, or `"collect"`. `"stop"` halts execution
+  immediately and returns the partially executed workflow. `"warn"`
+  records the error in the chunk's `meta`, signaling immediately.
+  `"collect"` gathers all errors from across all chunks and reports them
+  at the end.
+
+- verbose:
+
+  Logical. If `TRUE`, emits a message before each chunk identifying its
+  name and type, and prints a summary on completion reporting total
+  chunks run, successes, errors, and elapsed time. Defaults to `FALSE`.
+  The global default can be set with `options(qryflow.verbose = TRUE)`.
+
 - simplify:
 
   Logical; if `TRUE` (default), a list of length 1 is simplified to the
   single result object.
+
+- default_type:
+
+  The default chunk type (defaults to "query"). The global default can
+  be set with `options(qryflow.verbose = TRUE)`.
 
 ## Value
 

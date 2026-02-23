@@ -13,11 +13,6 @@ ls_qryflow_types()
 
 Character vector of registered chunk types
 
-## Details
-
-`ls_qryflow_types` is a shortcut for `ls_qryflow_handlers`. It's
-expected that a handler exists for each type.
-
 ## Examples
 
 ``` r

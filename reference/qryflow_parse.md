@@ -7,7 +7,11 @@ other custom markers.
 ## Usage
 
 ``` r
-qryflow_parse(sql, default_type = "query")
+qryflow_parse(
+  sql,
+  ...,
+  default_type = getOption("qryflow.default.type", "query")
+)
 ```
 
 ## Arguments
@@ -17,9 +21,14 @@ qryflow_parse(sql, default_type = "query")
   A file path to a SQL workflow file, or a character vector containing
   SQL lines.
 
+- ...:
+
+  Reserved for future use.
+
 - default_type:
 
-  The default chunk type (defaults to "query")
+  The default chunk type (defaults to "query"). The global default can
+  be set with `options(qryflow.verbose = TRUE)`.
 
 ## Value
 

@@ -10,7 +10,8 @@ new_qryflow_chunk(
   name = character(),
   sql = character(),
   tags = NULL,
-  results = NULL
+  results = NULL,
+  meta = init_meta()
 )
 ```
 
@@ -35,6 +36,10 @@ new_qryflow_chunk(
 - results:
 
   Optional, filled in after chunk execution
+
+- meta:
+
+  Optional, stores meta data on the object
 
 ## Value
 

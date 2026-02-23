@@ -1,6 +1,6 @@
 # Execute a parsed qryflow SQL workflow
 
-`qryflow_execute()` takes a parsed workflow object (as returned by
+`qryflow_execute()` takes a `qryflow` object (as returned by
 [`qryflow_parse()`](https://christian-million.github.io/qryflow/reference/qryflow_parse.md)),
 executes each chunk (e.g., `@query`, `@exec`), and collects the results
 and timing metadata.
@@ -14,7 +14,13 @@ if you want to manually control parsing and execution.
 ## Usage
 
 ``` r
-qryflow_execute(con, x, ..., source = NULL)
+qryflow_execute(
+  con,
+  x,
+  ...,
+  on_error = c("stop", "warn", "collect"),
+  verbose = getOption("qryflow.verbose", FALSE)
+)
 ```
 
 ## Arguments
@@ -26,22 +32,33 @@ qryflow_execute(con, x, ..., source = NULL)
 
 - x:
 
-  A parsed qryflow workflow object, typically created by
+  A `qryflow` object, typically created by
   [`qryflow_parse()`](https://christian-million.github.io/qryflow/reference/qryflow_parse.md)
 
 - ...:
 
-  Reserved for future use.
+  Reserved for future use
 
-- source:
+- on_error:
 
-  Optional; a character string indicating the source SQL to include in
-  metadata.
+  Controls behaviour when a chunk fails during execution. One of
+  `"stop"` (default), `"warn"`, or `"collect"`. `"stop"` halts execution
+  immediately and returns the partially executed workflow. `"warn"`
+  records the error in the chunk's `meta`, signaling immediately.
+  `"collect"` gathers all errors from across all chunks and reports them
+  at the end.
+
+- verbose:
+
+  Logical. If `TRUE`, emits a message before each chunk identifying its
+  name and type, and prints a summary on completion reporting total
+  chunks run, successes, errors, and elapsed time. Defaults to `FALSE`.
+  The global default can be set with `options(qryflow.verbose = TRUE)`.
 
 ## Value
 
-An object of class `qryflow_result`, containing executed chunks with
-results and a `meta` field that includes timing and source information.
+An object of class `qryflow`, containing executed chunks with results
+and a `meta` field that includes timing and source information.
 
 ## See also
 
@@ -57,7 +74,7 @@ filepath <- example_sql_path("mtcars.sql")
 
 parsed <- qryflow_parse(filepath)
 
-executed <- qryflow_execute(con, parsed, source = filepath)
+executed <- qryflow_execute(con, parsed)
 
 DBI::dbDisconnect(con)
 ```

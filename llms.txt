@@ -186,9 +186,6 @@ parsers and handlers.
   : Detect the presence of a properly structured tagline
 
 - [`extract_all_tags()`](https://christian-million.github.io/qryflow/reference/extract_all_tags.md)
-  [`extract_tag()`](https://christian-million.github.io/qryflow/reference/extract_all_tags.md)
-  [`extract_name()`](https://christian-million.github.io/qryflow/reference/extract_all_tags.md)
-  [`extract_type()`](https://christian-million.github.io/qryflow/reference/extract_all_tags.md)
   [`subset_tags()`](https://christian-million.github.io/qryflow/reference/extract_all_tags.md)
   : Extract tagged metadata from a SQL chunk
 
@@ -196,9 +193,6 @@ parsers and handlers.
   :
 
   Create an instance of the `qryflow_chunk` class
-
-- [`qryflow_default_type()`](https://christian-million.github.io/qryflow/reference/qryflow_default_type.md)
-  : Access the default qryflow chunk type
 
 ## Example Utilities
 

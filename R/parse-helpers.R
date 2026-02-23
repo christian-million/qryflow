@@ -27,6 +27,15 @@ is_tag_line <- function(line) {
   grepl("^\\s*--\\s*@[^:]+:", line)
 }
 
+is_plain_comment <- function(line) {
+  grepl("^\\s*--", line) & !is_tag_line(line)
+}
+
+# Anything not a plain comment or a tag_line
+is_block_breaking <- function(line) {
+  !grepl("^\\s*--", line)
+}
+
 #' Extract tagged metadata from a SQL chunk
 #'
 #' @description
@@ -58,7 +67,7 @@ is_tag_line <- function(line) {
 extract_all_tags <- function(
   text
 ) {
-  tag_pattern = "^\\s*--\\s*@([^:]+):\\s*(.*)$"
+  tag_pattern <- "^\\s*--\\s*@([^:]+):\\s*(.*)$"
   lines <- read_sql_lines(text)
   taglines <- lines[is_tag_line(lines)]
 
@@ -72,12 +81,11 @@ extract_all_tags <- function(
   # Extract matches
   matched <- regmatches(taglines, matches)
 
-  df <- as.data.frame(do.call(rbind, matched))[, 2:3]
+  keys <- vapply(matched, `[[`, character(1), 2L)
+  values <- vapply(matched, `[[`, character(1), 3L)
 
-  names(df) <- c("tag", "value")
-
-  l <- as.list(df$value)
-  names(l) <- df$tag
+  l <- as.list(values)
+  names(l) <- keys
 
   return(l)
 }

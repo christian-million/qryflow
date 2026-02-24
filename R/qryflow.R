@@ -133,6 +133,21 @@ qryflow_run <- function(
   invisible(obj)
 }
 
+qryflow_run_ <- function(con, sql, ..., on_error, verbose, default_type) {
+  statement <- read_sql_lines(sql)
+
+  wf <- qryflow_parse(statement, default_type = default_type)
+  results <- qryflow_execute(
+    con,
+    wf,
+    ...,
+    on_error = on_error,
+    verbose = verbose
+  )
+
+  return(results)
+}
+
 #' Extract results from a `qryflow_workflow` object
 #'
 #' @description
@@ -174,19 +189,4 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
   }
 
   return(res)
-}
-
-qryflow_run_ <- function(con, sql, ..., on_error, verbose, default_type) {
-  statement <- read_sql_lines(sql)
-
-  wf <- qryflow_parse(statement, default_type = default_type)
-  results <- qryflow_execute(
-    con,
-    wf,
-    ...,
-    on_error = on_error,
-    verbose = verbose
-  )
-
-  return(results)
 }

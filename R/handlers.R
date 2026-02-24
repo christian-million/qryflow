@@ -88,13 +88,15 @@ qryflow_handler_exists <- function(type) {
 #' @export
 validate_qryflow_handler <- function(handler) {
   if (!is.function(handler)) {
-    stop("Handler must be a function.")
+    stop_qryflow("Handler must be a function.")
   }
 
   f_args <- names(formals(handler))
 
   if (!identical(f_args, c("con", "chunk", "..."))) {
-    stop("Handler must have arguments 'chunk', 'con', '...' in that order.")
+    stop_qryflow(
+      "Handler must have arguments 'con', 'chunk', '...' in that order."
+    )
   }
 
   invisible(TRUE)

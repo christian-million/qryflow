@@ -48,8 +48,16 @@ split_chunks <- function(lines) {
   # Find all lines that are tag lines
   tag_lines <- is_tag_line(lines)
   breaking <- is_block_breaking(lines)
+  plain_comment <- is_plain_comment(lines)
 
-  prev_breaking <- c(TRUE, breaking[-length(breaking)])
+  effective_breaking <- breaking
+  for (i in seq_len(length(lines))[-1L]) {
+    if (plain_comment[i]) {
+      effective_breaking[i] <- effective_breaking[i - 1L]
+    }
+  }
+
+  prev_breaking <- c(TRUE, effective_breaking[-length(effective_breaking)])
   chunk_starts <- which(tag_lines & prev_breaking)
 
   if (length(chunk_starts) == 0L || chunk_starts[1L] != 1L) {

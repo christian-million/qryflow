@@ -31,7 +31,7 @@ register_qryflow_type <- function(type, handler, overwrite = FALSE) {
   h_exists <- qryflow_handler_exists(type)
 
   if (h_exists && !isTRUE(overwrite)) {
-    stop(
+    stop_qryflow(
       paste0(
         "A handler for type '",
         type,

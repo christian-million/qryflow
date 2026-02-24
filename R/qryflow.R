@@ -29,7 +29,7 @@
 #' @param default_type The default chunk type (defaults to "query"). The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #'
-#' @returns A named list of query results, or a single result if `simplify = TRUE` and only one chunk exists.
+#' @returns (Invisibly) A named list of query results, or a single result if `simplify = TRUE` and only one chunk exists.
 #'
 #' @seealso [`qryflow_run()`], [`qryflow_results()`]
 #' @examples
@@ -62,7 +62,8 @@ qryflow <- function(
     default_type = default_type
   )
 
-  qryflow_results(x, ..., simplify = simplify)
+  res <- qryflow_results(x, ..., simplify = simplify)
+  invisible(res)
 }
 
 #' Parse and execute a tagged SQL workflow
@@ -90,7 +91,7 @@ qryflow <- function(
 #' @param default_type The default chunk type (defaults to "query"). The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #'
-#' @returns A list representing the evaluated workflow, containing query results, execution metadata,
+#' @returns (Invisibly) A list representing the evaluated workflow, containing query results, execution metadata,
 #'   or both, depending on the contents of the SQL script.
 #'
 #' @seealso [`qryflow()`], [`qryflow_results()`], [`qryflow_execute()`], [`qryflow_parse()`]
@@ -129,7 +130,7 @@ qryflow_run <- function(
     default_type = default_type
   )
 
-  obj
+  invisible(obj)
 }
 
 #' Extract results from a `qryflow_workflow` object

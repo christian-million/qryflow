@@ -27,7 +27,7 @@
 #' @param simplify Logical; if `TRUE` (default), a list of length 1 is simplified to the
 #'   single result object.
 #' @param default_type The default chunk type (defaults to "query"). The global default can be set with
-#'   `options(qryflow.verbose = TRUE)`.
+#'   `options(qryflow.default_type = 'query')`.
 #'
 #' @returns (Invisibly) A named list of query results, or a single result if `simplify = TRUE` and only one chunk exists.
 #'
@@ -50,7 +50,7 @@ qryflow <- function(
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
   simplify = TRUE,
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 ) {
   on_error <- validate_on_error(on_error)
   x <- qryflow_run(

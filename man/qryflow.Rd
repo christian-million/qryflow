@@ -11,7 +11,7 @@ qryflow(
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
   simplify = TRUE,
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 }
 \arguments{
@@ -37,7 +37,7 @@ Defaults to \code{FALSE}. The global default can be set with
 single result object.}
 
 \item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
-\code{options(qryflow.verbose = TRUE)}.}
+\code{options(qryflow.default_type = 'query')}.}
 }
 \value{
 (Invisibly) A named list of query results, or a single result if \code{simplify = TRUE} and only one chunk exists.

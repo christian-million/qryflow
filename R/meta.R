@@ -1,3 +1,22 @@
+#' Extract metadata from qryflow objects
+#'
+#' @param x `qryflow` or `qryflow_chunk` object
+#'
+#' @examples
+#' con <- example_db_connect(mtcars)
+#'
+#' filepath <- example_sql_path("mtcars.sql")
+#'
+#' parsed <- qryflow_parse(filepath)
+#' qryflow_meta(parsed)
+#' qryflow_meta(parsed[[1]])
+#'
+#' results <- qryflow_execute(con, parsed)
+#' qryflow_meta(results)
+#' qryflow_meta(results[[1]])
+#'
+#' DBI::dbDisconnect(con)
+#' @export
 qryflow_meta <- function(x) {
   attr(x, "meta")
 }

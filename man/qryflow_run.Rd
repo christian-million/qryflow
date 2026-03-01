@@ -36,15 +36,15 @@ Defaults to \code{FALSE}. The global default can be set with
 \code{options(qryflow.verbose = TRUE)}.}
 }
 \value{
-A list representing the evaluated workflow, containing query results, execution metadata,
+(Invisibly) A list representing the evaluated workflow, containing query results, execution metadata,
 or both, depending on the contents of the SQL script.
 }
 \description{
 \code{qryflow_run()} reads a SQL workflow from a file path or character string, parses it into
 tagged statements, and executes those statements against a database connection.
 
-This function is typically used internally by \code{\link[=qryflow]{qryflow()}}, but can also be called directly
-for more control over workflow execution.
+This function might be preferable for those who want a \code{qryflow} execution to consistently return a \code{qryflow} object. Whereas the \code{qryflow()} function
+may return a list or other objects, depending on the arguments, \code{qryflow_run()} always returns a \code{qryflow} object. Results can be extracted using \code{qryflow_results()}.
 }
 \examples{
 con <- example_db_connect(mtcars)

@@ -1,10 +1,20 @@
 # qryflow() #####
-test_that("qryflow() returns list", {
+test_that("qryflow() returns list when simplify=TRUE but multiple results", {
   con <- example_db_connect(mtcars)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
   path <- example_sql_path()
 
-  results <- qryflow(con, path)
+  results <- qryflow(con, path, simplify = TRUE)
+
+  expect_type(results, "list")
+})
+
+test_that("qryflow() returns `list` when simplify=FALSE", {
+  con <- example_db_connect(mtcars)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  path <- example_sql_path()
+
+  results <- qryflow(con, path, simplify = FALSE)
 
   expect_type(results, "list")
 })
@@ -33,13 +43,13 @@ test_that("qryflow_run() returns `qryflow`", {
 
 # qryflow_results() #####
 
-test_that("qryflow_results() returns list", {
+test_that("qryflow_results() returns list when multiple chunks and simplify = TRUE", {
   con <- example_db_connect(mtcars)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
   path <- example_sql_path("get_mtcars.sql")
 
   obj <- qryflow_run(con, path)
-  results <- qryflow_results(obj)
+  results <- qryflow_results(obj, simplify = TRUE)
 
   expect_type(results, "list")
 })

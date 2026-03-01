@@ -11,7 +11,7 @@ qryflow(
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
   simplify = TRUE,
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 }
 \arguments{
@@ -37,16 +37,16 @@ Defaults to \code{FALSE}. The global default can be set with
 single result object.}
 
 \item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
-\code{options(qryflow.verbose = TRUE)}.}
+\code{options(qryflow.default_type = 'query')}.}
 }
 \value{
-A named list of query results, or a single result if \code{simplify = TRUE} and only one chunk exists.
+(Invisibly) A named list of query results, or a single result if \code{simplify = TRUE} and only one chunk exists.
 }
 \description{
-\code{qryflow()} is the main entry point to the \code{qryflow} package. It executes a SQL workflow
+\code{qryflow()} is high level convenience function. It executes a SQL workflow
 defined in a tagged \code{.sql} script or character string and returns query results as R objects.
 
-The SQL script can contain multiple steps tagged with \verb{@query} or \verb{@exec}. Query results
+The SQL script can contain multiple-steps (chunks), each tagged with \verb{@query} or \verb{@exec}. Query results
 are captured and returned as a named list, where names correspond to the \verb{@query} tags.
 }
 \details{
@@ -55,7 +55,6 @@ and \code{\link[=qryflow_results]{qryflow_results()}}, which filters the output 
 }
 \examples{
 con <- example_db_connect(mtcars)
-
 filepath <- example_sql_path("mtcars.sql")
 
 results <- qryflow(con, filepath)

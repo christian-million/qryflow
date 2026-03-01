@@ -21,7 +21,7 @@
 #'   Defaults to `FALSE`. The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #'
-#' @returns An object of class `qryflow`, containing executed chunks with results and a `meta` field
+#' @returns An object of class `qryflow`, containing executed chunks with results and a `meta` attribute
 #'   that includes timing and source information.
 #'
 #' @seealso [`qryflow_run()`], [`qryflow_parse()`]
@@ -48,6 +48,7 @@ qryflow_execute <- function(
     stop_qryflow("`x` is not an object of class `qryflow`")
   }
   on_error <- validate_on_error(on_error)
+  validate_con_arg(con)
 
   # Prepare vectors to store output
   chunk_names <- names(x)
@@ -141,5 +142,14 @@ qryflow_execute <- function(
     dispatch_collected_errors(errors, out)
   }
 
-  return(out)
+  invisible(out)
+}
+
+validate_con_arg <- function(con) {
+  if (!inherits(con, "DBIConnection")) {
+    stop_qryflow("'con' must be a DBI connection object from DBI::dbConnect().")
+  }
+  if (!DBI::dbIsValid(con)) {
+    stop_qryflow("'con' is not a valid connection. Has it been disconnected?")
+  }
 }

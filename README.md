@@ -8,27 +8,23 @@
 [![R-CMD-check](https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/christian-million/qryflow/graph/badge.svg)](https://app.codecov.io/gh/christian-million/qryflow)
-[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/qryflow)](https://cran.r-project.org/package=qryflow)
+[![Downloads](https://cranlogs.r-pkg.org/badges/qryflow)](https://cran.r-project.org/package=qryflow)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/qryflow)](https://cran.r-project.org/package=qryflow)
 <!-- badges: end -->
 
 ## Overview
 
-Execute multi-step ‘SQL’ statements using specially formatted comments
-that define and control execution.
-
-`qryflow` lets you define **multi-step SQL workflows** using
-comment-based tags in your SQL code. These tags tell R how to execute
-each SQL chunk and what to name the results. This allows you to:
+`qryflow` lets you write multi-step SQL workflows in plain `.sql` files
+and run them from R with a single function call. Specially formatted
+tags tell R how to execute each SQL chunk and what to name the results.
+This allows you to:
 
 - Keep multiple SQL statements in the same file.
 
 - Control how each SQL “chunk” is executed.
 
 - Return results as named R objects.
-
-- Extend behavior using custom tags, parsers, and handlers.
 
 ## Install
 
@@ -47,8 +43,6 @@ devtools::install_github("christian-million/qryflow")
 ```
 
 ## Example
-
-The code below demonstrates the primary use case for `qryflow`.
 
 Basic Usage:
 
@@ -78,7 +72,17 @@ FROM cyl_6;
 "
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(con, sql)
+results <- qryflow(con, sql, verbose = TRUE)
+#> Running 4 chunks
+#> [1/4] drop_cyl_6 [exec]
+#>       ✓ success  0s
+#> [2/4] prep_cyl_6 [exec]
+#>       ✓ success  0s
+#> [3/4] df_mtcars [query]
+#>       ✓ success  0s
+#> [4/4] df_cyl_6 [query]
+#>       ✓ success  0s
+#> Done in 0.01s — 4 success, 0 error, 0 skipped
 
 # Access the results from the chunk named `df_cyl_6`
 head(results$df_cyl_6)
@@ -97,11 +101,20 @@ The path to a file containing SQL can also be passed:
 filepath <- example_sql_path('mtcars.sql')
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(con, filepath)
+results <- qryflow(con, filepath, verbose = TRUE)
+#> Running 4 chunks
+#> [1/4] drop_cyl_6 [exec]
+#>       ✓ success  0s
+#> [2/4] prep_cyl_6 [exec]
+#>       ✓ success  0s
+#> [3/4] df_mtcars [query]
+#>       ✓ success  0s
+#> [4/4] df_cyl_6 [query]
+#>       ✓ success  0s
+#> Done in 0.01s — 4 success, 0 error, 0 skipped
 
 # Access the results from the chunk named `df_cyl_6`
-results$df_cyl_6 |>
-  head()
+head(results$df_cyl_6)
 #>    mpg cyl  disp  hp drat    wt  qsec vs am gear carb
 #> 1 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
 #> 2 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4

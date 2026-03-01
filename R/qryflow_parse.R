@@ -1,7 +1,7 @@
 #' Parse a SQL workflow into tagged chunks
 #'
-#' `qryflow_parse()` reads a SQL workflow file or character vector and parses it into
-#' discrete tagged chunks based on `@query`, `@exec`, and other custom markers.
+#' `qryflow_parse()` reads a SQL file or character vector and parses it into
+#' discrete chunks based on `@query`, `@exec`, and other custom markers.
 #'
 #' This function is used internally by [`qryflow_run()`], but can also be used directly to
 #' preprocess or inspect the structure of a SQL workflow.

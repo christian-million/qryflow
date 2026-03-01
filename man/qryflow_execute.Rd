@@ -32,7 +32,7 @@ Defaults to \code{FALSE}. The global default can be set with
 \code{options(qryflow.verbose = TRUE)}.}
 }
 \value{
-An object of class \code{qryflow}, containing executed chunks with results and a \code{meta} field
+An object of class \code{qryflow}, containing executed chunks with results and a \code{meta} attribute
 that includes timing and source information.
 }
 \description{

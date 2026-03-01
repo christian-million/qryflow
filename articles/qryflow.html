@@ -34,8 +34,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/advanced-qryflow.html">Advanced Usage with qryflow</a></li>
-    <li><a class="dropdown-item" href="../articles/extend-qryflow.html">Extending qryflow Functionality</a></li>
+<li><a class="dropdown-item" href="../articles/extend-qryflow.html">Extending qryflow Functionality</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -72,26 +71,19 @@
 <div class="section level2">
 <h2 id="what-is-qryflow">What is <code>qryflow</code>?<a class="anchor" aria-label="anchor" href="#what-is-qryflow"></a>
 </h2>
-<p>The <code>qryflow</code> package lets you tag sections of SQL, called
-chunks, so that R knows how to execute each part independently. Tagging
-your SQL lets you:</p>
+<p><code>qryflow</code> lets you write multi-step SQL workflows in plain
+<code>.sql</code> files and run them from R with a single function call.
+Specially formatted tags tell R how to execute each SQL chunk and what
+to name the results. This allows you to:</p>
 <ul>
 <li><p>Keep multiple SQL statements in the same file.</p></li>
-<li><p>Control how SQL is executed (e.g.,
-<code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code>)</p></li>
-<li><p>Attach names to results, so they’re returned as named R
-objects</p></li>
+<li><p>Control how each SQL “chunk” is executed.</p></li>
+<li><p>Return results as named R objects.</p></li>
 <li><p>Pass metadata that can be used later in R workflows</p></li>
 </ul>
 <p>In short: You can define and run <strong>multi-step SQL
 workflows</strong> with one function call, and get your results back as
 a structured R object.</p>
-<p>This vignette covers:</p>
-<ul>
-<li><p>How to tag SQL chunks</p></li>
-<li><p>The different types of tags supported</p></li>
-<li><p>How <code>qryflow</code> defines and handles a chunk</p></li>
-</ul>
 </div>
 <div class="section level2">
 <h2 id="basic-usage">Basic usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
@@ -101,9 +93,7 @@ with special comments and a connection to DBI-compliant database. Note,
 the SQL can be a character vector, like in the example below, or a
 filepath to a file that contains SQL.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://christian-million.github.io/qryflow/">qryflow</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Connection to In-Memory DB with table populated from mtcars</span></span>
+<code class="sourceCode R"><span><span class="co"># Connection to In-Memory DB with table populated from mtcars</span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_db_connect.html">example_db_connect</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sql</span> <span class="op">&lt;-</span> <span class="st">"</span></span>
@@ -116,17 +106,21 @@ filepath to a file that contains SQL.</p>
 <span><span class="st">FROM mtcars</span></span>
 <span><span class="st">WHERE cyl = 6;</span></span>
 <span><span class="st"></span></span>
-<span><span class="st">-- @query: df_mtcars</span></span>
-<span><span class="st">SELECT *</span></span>
-<span><span class="st">FROM mtcars;</span></span>
-<span><span class="st"></span></span>
 <span><span class="st">-- @query: df_cyl_6</span></span>
 <span><span class="st">SELECT *</span></span>
 <span><span class="st">FROM cyl_6;</span></span>
 <span><span class="st">"</span></span>
 <span></span>
 <span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running 3 chunks</span></span>
+<span><span class="co">#&gt; [1/3] drop_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [2/3] prep_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [3/3] df_cyl_6 [query]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; Done in 0s — 3 success, 0 error, 0 skipped</span></span>
 <span></span>
 <span><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
@@ -137,187 +131,446 @@ filepath to a file that contains SQL.</p>
 <span><span class="co">#&gt; 4 18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1</span></span>
 <span><span class="co">#&gt; 5 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</span></span>
 <span><span class="co">#&gt; 6 17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4</span></span></code></pre></div>
-<p>When you run <code><a href="../reference/qryflow.html">qryflow()</a></code>, here’s what happens:</p>
+<p>By default, the package supports <code>@exec</code> tags, which are
+executed with <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code> and <code>@query</code>
+tags, which are executed with <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery()</a></code>.</p>
+<p>When you run <code><a href="../reference/qryflow.html">qryflow()</a></code>:</p>
 <ol style="list-style-type: decimal">
-<li><p>Your SQL script is split into chunks using tag lines like
+<li><p>The SQL script is split into chunks using tag lines like
 <code>-- @query: df_mtcars</code>.</p></li>
 <li><p>Each chunk is assigned a type (e.g., <code>query</code> or
 <code>exec</code>)</p></li>
-<li><p>Chunks are executed in order, and query results are returned as
-named objects</p></li>
+<li><p>Chunks are executed in order, using the associated execution
+type</p></li>
+<li><p>The results are returned as named objects</p></li>
 </ol>
 </div>
 <div class="section level2">
-<h2 id="simplify-true">Simplify = TRUE<a class="anchor" aria-label="anchor" href="#simplify-true"></a>
+<h2 id="defining-a-chunk">Defining a Chunk<a class="anchor" aria-label="anchor" href="#defining-a-chunk"></a>
 </h2>
-<p>By default, <code><a href="../reference/qryflow.html">qryflow()</a></code> will return a single data.frame
-(as opposed to a named list of results) if there is only one chunk and
-the argument <code>simplify = TRUE</code>. For example:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://christian-million.github.io/qryflow/">qryflow</a></span><span class="op">)</span></span>
+<p>In <code>qryflow</code>, a chunk is a grouped section of SQL code,
+representing a single executable unit within a larger multi-step SQL
+workflow, and preceded by one or more tag lines (e.g., the pattern
+<code>-- @&lt;tag&gt;: &lt;value&gt;</code>).</p>
+<ul>
+<li><p>Tagged lines act as markers that start a new chunk.</p></li>
+<li><p>All lines (comments and SQL) immediately following a contiguous
+group of tagged lines belong to that chunk until another tag line starts
+the next chunk.</p></li>
+<li><p>If the script has no tags, the entire script is treated as one
+single chunk.</p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="tags-and-aliases">Tags and Aliases<a class="anchor" aria-label="anchor" href="#tags-and-aliases"></a>
+</h2>
+<p>Each SQL chunk must be tagged with a <code>type</code> so
+<code>qryflow</code> knows how to execute it. If a chunk is not provided
+with a tag, the <code>qryflow</code> engine will use the value of the
+<code>default_type</code> argument, which can be provided directly or
+set with <code>getOption("qryflow.default_type", "query")</code>. It
+defaults to “query”, as getting data out is the most common use
+case.</p>
+<p>Tags use SQL-style comments (<code>--</code>) and follow the
+format:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">-- @&lt;tag&gt;: &lt;value&gt;</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="important-tags">Important Tags<a class="anchor" aria-label="anchor" href="#important-tags"></a>
+</h3>
+<p>Each chunk should have both a <code>name</code> (the name of the
+object when returned to R) and a <code>type</code> (execution mode for
+the chunk). Users can set these explicitly with the following tags:</p>
+<ul>
+<li><p><code>@type</code> apecifies execution type
+(<code>-- @type: query</code>)</p></li>
+<li><p><code>@name</code> assigns a name to the chunk’s result
+(<code>-- @name: df_users</code>)</p></li>
+</ul>
+<p>For registered types, users can use shorthand to supply both name and
+type in one line. For example, <code>@query</code> and
+<code>@exec</code> are aliases for setting both <code>@type</code> and
+<code>@name</code> in one line.</p>
+<p><strong>Aliased form (preferred):</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">-- @query: df_mtcars</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
+<p><strong>Explicit form (equivalent):</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">-- @type: query</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">-- @name: df_mtcars</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="type-identification">Type Identification<a class="anchor" aria-label="anchor" href="#type-identification"></a>
+</h3>
+<p>During parsing, <code>qryflow</code> determines its type using the
+following rules:</p>
+<ol style="list-style-type: decimal">
+<li><p>If a chunk includes an explicit <code>-- @type:</code> tag, that
+value is used as the chunk type.</p></li>
+<li><p>If there is no <code>@type:</code> tag, <code>qryflow</code>
+checks for any other tag that matches a registered type
+(<code>@query:</code>, <code>@exec:</code>, etc.) . The first match
+found is used as the type.</p></li>
+<li><p>If no recognized tag is found, the type defaults to the value of
+<code>getOption("qryflow.default_type", "query")</code>.</p></li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="passing-additional-tags">Passing Additional Tags<a class="anchor" aria-label="anchor" href="#passing-additional-tags"></a>
+</h3>
+<p>You can include additional tags to carry metadata into your R
+workflow, that follow the tagging structure:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">-- @exec: df_mtcars</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">-- @src: dbo.mtcars</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">-- @topic: cars</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="important-arguments">Important Arguments<a class="anchor" aria-label="anchor" href="#important-arguments"></a>
+</h2>
+<div class="section level3">
+<h3 id="on_error">on_error<a class="anchor" aria-label="anchor" href="#on_error"></a>
+</h3>
+<p>The <code>on_error</code> argument controls what happens when a
+single chunk fails:</p>
+<ul>
+<li><p><code>"stop"</code> (default): halts execution immediately and
+raises an error.</p></li>
+<li><p><code>"warn"</code>: records the error and signals a warning, but
+continues running remaining chunks.</p></li>
+<li><p><code>"collect"</code>: silently collects all errors across all
+chunks and raises a single combined error at the end.</p></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># on_error = "stop" (default): halts on first failure</span></span>
+<span><span class="va">bad_sql</span> <span class="op">&lt;-</span> <span class="st">"</span></span>
+<span><span class="st">-- @exec: prep_cyl_6</span></span>
+<span><span class="st">CREATE TABLE cyl_6 AS SELECT * FROM mtcars WHERE cyl = 6;</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">-- @query: df_missing</span></span>
+<span><span class="st">SELECT * FROM nonexistent_table;</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">-- @query: df_mtcars</span></span>
+<span><span class="st">SELECT * FROM mtcars;</span></span>
+<span><span class="st">"</span></span>
 <span></span>
-<span><span class="co"># Connection to In-Memory DB with table populated from mtcars</span></span>
-<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_db_connect.html">example_db_connect</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sql</span> <span class="op">&lt;-</span> <span class="st">"</span></span>
+<span><span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">bad_sql</span>, on_error <span class="op">=</span> <span class="st">"stop"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Chunk 'prep_cyl_6' failed with message: 'table cyl_6 already exists'</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Warn collects errors and signals a warning</span></span>
+<span><span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">bad_sql</span>, on_error <span class="op">=</span> <span class="st">"warn"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: table cyl_6 already exists</span></span>
+<span><span class="co">#&gt; Warning: no such table: nonexistent_table</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># on_error = "collect": runs everything, then reports all failures together</span></span>
+<span><span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">bad_sql</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, on_error <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running 3 chunks</span></span>
+<span><span class="co">#&gt; [1/3] prep_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✗ error    0s</span></span>
+<span><span class="co">#&gt; [2/3] df_missing [query]</span></span>
+<span><span class="co">#&gt;       ✗ error    0s</span></span>
+<span><span class="co">#&gt; [3/3] df_mtcars [query]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; Done in 0s — 0 success, 0 error, 0 skipped</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> 2 chunks failed:</span></span>
+<span><span class="co">#&gt;   - prep_cyl_6: table cyl_6 already exists</span></span>
+<span><span class="co">#&gt;   - df_missing: no such table: nonexistent_table</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="verbose">verbose<a class="anchor" aria-label="anchor" href="#verbose"></a>
+</h3>
+<p>By default, <code>qryflow</code> is quiet. However, for long running
+queries with multiple chunks, you may want feedback on which chunks are
+currently running. You can use <code>verbose = TRUE</code> to get
+updates during execution.</p>
+</div>
+<div class="section level3">
+<h3 id="simplify">simplify<a class="anchor" aria-label="anchor" href="#simplify"></a>
+</h3>
+<p>When <code>simplify = TRUE</code>, in the case where there is only
+one chunk, <code><a href="../reference/qryflow.html">qryflow()</a></code> will return a single object (as
+opposed to a named list of results). For example:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sql1</span> <span class="op">&lt;-</span> <span class="st">"</span></span>
 <span><span class="st">-- @query: df_mtcars</span></span>
 <span><span class="st">SELECT *</span></span>
 <span><span class="st">FROM mtcars;</span></span>
 <span><span class="st">"</span></span>
 <span></span>
-<span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span><span class="op">)</span></span>
+<span><span class="va">sql2</span> <span class="op">&lt;-</span> <span class="st">"</span></span>
+<span><span class="st">-- @query: df_mtcars</span></span>
+<span><span class="st">SELECT *</span></span>
+<span><span class="st">FROM mtcars;</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">-- @query: df_mtcars_cyl6</span></span>
+<span><span class="st">SELECT *</span></span>
+<span><span class="st">FROM mtcars</span></span>
+<span><span class="st">WHERE cyl = 6;</span></span>
+<span><span class="st">"</span></span>
 <span></span>
-<span><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
-<span><span class="co"># results$df_cyl_6</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    mpg cyl disp  hp drat    wt  qsec vs am gear carb</span></span>
-<span><span class="co">#&gt; 1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4</span></span>
-<span><span class="co">#&gt; 2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4</span></span>
-<span><span class="co">#&gt; 3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1</span></span>
-<span><span class="co">#&gt; 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1</span></span>
-<span><span class="co">#&gt; 5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2</span></span>
-<span><span class="co">#&gt; 6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</span></span></code></pre></div>
+<span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
+<span><span class="va">res1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql1</span>, simplify <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql2</span>, simplify <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">res3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql1</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">res1</span><span class="op">)</span> <span class="co"># simplifies the result to the single data.frame() because only one chunk</span></span>
+<span><span class="co">#&gt; [1] "data.frame"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">res2</span><span class="op">)</span> <span class="co"># returns named list</span></span>
+<span><span class="co">#&gt; [1] "list"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">res3</span><span class="op">)</span> <span class="co"># returns named list, because simplify = FALSE</span></span>
+<span><span class="co">#&gt; [1] "list"</span></span></code></pre></div>
 <p>This design choice is to facilitate easy interactive use and is a
 common use-case. Because <code><a href="../reference/qryflow.html">qryflow()</a></code> might return a named
 <code>list</code> or a single <code>data.frame</code> depending on the
-input, <code>qryflow</code> exports other functions so users can
-prioritize reliability in return objects. See the help pages for
-<code>?qryflow_run()</code> and <code>?qryflow_results()</code>. Or
-check out the Advanced Usage vignette.</p>
+input, the <code>qryflow</code> package exports other functions so users
+can prioritize reliability in return objects. The next section explores
+functions like <code><a href="../reference/qryflow_run.html">qryflow_run()</a></code> and
+<code><a href="../reference/qryflow_results.html">qryflow_results()</a></code> further.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="tagging-syntax">Tagging syntax<a class="anchor" aria-label="anchor" href="#tagging-syntax"></a>
+<h2 id="the-core-api">The Core API<a class="anchor" aria-label="anchor" href="#the-core-api"></a>
 </h2>
-<p>To tag a specific chunk of SQL, use the following format:
-<code>-- @key: value</code>.</p>
-<p>For example, to indicate that the following chunk of SQL is a
-<code>query</code>, meaning we expect it to return a
-<code>data.frame</code> by calling <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery</a></code>, we
-precede the statment with a special comment:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">-- @query: my_data_frame</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="kw">FROM</span> TBL</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">COLUMN</span> <span class="op">=</span> <span class="st">'VALUE'</span></span></code></pre></div>
-<p>Breaking down the tag into it’s component parts:</p>
-<ol style="list-style-type: decimal">
-<li><p>The tag begins with two dashes (<code>--</code>). This indicates
-a single line comment in SQL.</p></li>
-<li><p>Next, we use the <code>@</code> symbol to indicate the start of a
-tag, followed by the tag type. Currently, <code>qryflow</code> formally
-supports four tags: <code>type</code>, <code>name</code>,
-<code>query</code>, and <code>exec</code>. We follow the tag type with a
-colon (<code>:</code>).</p></li>
-<li><p>Next comes a value, depending on the type of tag. For the
-<code>@type:</code> tag, this will indicate the “type” of SQL chunk. For
-the <code>name</code>, <code>query</code>, and <code>exec</code> tags,
-the value indicates the custom name of the SQL chunk.</p></li>
-</ol>
-</div>
-<div class="section level2">
-<h2 id="tags-and-aliases">Tags and Aliases<a class="anchor" aria-label="anchor" href="#tags-and-aliases"></a>
-</h2>
-<p>Each SQL chunk must be tagged so <code>qryflow</code> knows how to
-handle it. Tags use SQL-style comments (<code>--</code>) and follow the
-format:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">-- @&lt;tag&gt;: &lt;value&gt;</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="common-tags">Common Tags<a class="anchor" aria-label="anchor" href="#common-tags"></a>
-</h3>
+<p>While <code><a href="../reference/qryflow.html">qryflow()</a></code> covers most use cases, users who want
+more control and consistency may prefer to use the functions that
+<code><a href="../reference/qryflow.html">qryflow()</a></code> leverages:</p>
 <ul>
-<li><p><code>@type</code> Specifies execution type
-(<code>-- @type: query</code>)</p></li>
-<li><p><code>@name</code> Assigns a name to the chunk’s result
-(<code>-- @name: df_users</code>)</p></li>
-<li><p><code>@query</code> Executes SQL with
-<code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery()</a></code> and names the result
-(<code>-- @query: df_users</code>)</p></li>
-<li><p><code>@exec</code> Executes SQL with
-<code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code>
-(<code>-- @exec: drop_table</code>)</p></li>
+<li><p><code><a href="../reference/qryflow_run.html">qryflow_run()</a></code></p></li>
+<li><p><code>qrflow_results()</code></p></li>
+<li><p><code><a href="../reference/qryflow_parse.html">qryflow_parse()</a></code></p></li>
+<li><p><code>qryflow_execute</code></p></li>
 </ul>
-<p><code>@query</code> and <code>@exec</code> are aliases for setting
-both <code>@type</code> and <code>@name</code> in one line.</p>
-<p><strong>Aliased form (preferred):</strong></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">-- @query: df_mtcars</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
-<p><strong>Explicit form (equivalent):</strong></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">-- @type: query</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">-- @name: df_mtcars</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
+<div class="section level3">
+<h3 id="qryflow_run-and-qryflow_results">
+<code>qryflow_run()</code> and <code>qryflow_results()</code><a class="anchor" aria-label="anchor" href="#qryflow_run-and-qryflow_results"></a>
+</h3>
+<p><code><a href="../reference/qryflow_run.html">qryflow_run()</a></code> performs parsing <em>and</em> execution,
+returning a full <code>qryflow</code> object - including all chunk
+metadata, not just the query results.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow_run.html">qryflow_run</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># A qryflow object</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "qryflow"</span></span>
+<span></span>
+<span><span class="co"># Chunk names are top-level list names</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_cyl_6"</span></span>
+<span></span>
+<span><span class="va">obj</span> <span class="co"># Print Method</span></span>
+<span><span class="co">#&gt; ── qryflow ───────────────────────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt;   chunks: 3 | status: success | duration: 0s </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   drop_cyl_6  [exec ]  ✓ success  0s</span></span>
+<span><span class="co">#&gt;   prep_cyl_6  [exec ]  ✓ success  0s</span></span>
+<span><span class="co">#&gt;   df_cyl_6    [query]  ✓ success  0s</span></span></code></pre></div>
+<p>Each element is a <code>qryflow_chunk</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "qryflow_chunk"</span></span>
+<span></span>
+<span><span class="co"># Print the chunk</span></span>
+<span><span class="va">obj</span><span class="op">$</span><span class="va">df_cyl_6</span></span>
+<span><span class="co">#&gt; ── qryflow_chunk: df_cyl_6 ───────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt;   type: query | ✓ success | duration: 0s</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   SELECT *</span></span>
+<span><span class="co">#&gt;   FROM cyl_6;</span></span></code></pre></div>
+<p>To extract only the query results (equivalent to what
+<code><a href="../reference/qryflow.html">qryflow()</a></code> returns), use <code><a href="../reference/qryflow_results.html">qryflow_results()</a></code>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow_results.html">qryflow_results</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "data.frame"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span></span>
+<span><span class="co">#&gt; 1 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4</span></span>
+<span><span class="co">#&gt; 2 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4</span></span>
+<span><span class="co">#&gt; 3 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1</span></span>
+<span><span class="co">#&gt; 4 18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1</span></span>
+<span><span class="co">#&gt; 5 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</span></span>
+<span><span class="co">#&gt; 6 17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="custom-tags">Custom Tags<a class="anchor" aria-label="anchor" href="#custom-tags"></a>
+<h3 id="qryflow_parse-and-qryflow_execute">
+<code>qryflow_parse()</code> and <code>qryflow_execute()</code><a class="anchor" aria-label="anchor" href="#qryflow_parse-and-qryflow_execute"></a>
 </h3>
-<p>You can include additional tags (e.g.,
-<code>-- @source: users</code>) to carry metadata into your R workflow.
-Only one execution-related tag is required per chunk (<span class="citation">@query</span>, <span class="citation">@exec</span>, or
-<span class="citation">@type</span>).</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="defining-a-chunk">Defining a Chunk<a class="anchor" aria-label="anchor" href="#defining-a-chunk"></a>
-</h2>
-<p>In <code>qryflow</code>, a Chunk is a logically grouped section of
-SQL code, representing a single executable unit within a larger
-multi-step SQL workflow.</p>
-<p>The SQL script is split into multiple chunks using specially
-formatted tag lines (SQL comments beginning with tags like – <span class="citation">@query</span>: or – <span class="citation">@exec</span>:). It scans through the SQL lines and
-splits the script at these tagged lines, grouping all subsequent SQL
-lines until the next tag or the end of the script.</p>
-<div class="section level3">
-<h3 id="how-splitting-works">How Splitting Works<a class="anchor" aria-label="anchor" href="#how-splitting-works"></a>
-</h3>
+<p>For even more control, you can parse and execute separately:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Step 1: Parse the SQL into structured chunks</span></span>
+<span><span class="va">filepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_sql_path.html">example_sql_path</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow_parse.html">qryflow_parse</a></span><span class="op">(</span><span class="va">filepath</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "qryflow"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"</span></span>
+<span></span>
+<span><span class="co"># Inspect a chunk before execution</span></span>
+<span><span class="va">workflow</span><span class="op">$</span><span class="va">df_mtcars</span></span>
+<span><span class="co">#&gt; ── qryflow_chunk: df_mtcars ──────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt;   type: query | </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   SELECT *</span></span>
+<span><span class="co">#&gt;   FROM mtcars;</span></span></code></pre></div>
+<p>Each <code>qryflow_chunk</code> contains:</p>
 <ul>
-<li><p>Tagged lines act as markers that start a new chunk.</p></li>
-<li><p>All lines immediately following a tag line belong to that chunk
-until another tag line starts the next chunk.</p></li>
-<li><p>If the script has no tags, the entire script is treated as one
-single chunk.</p></li>
 <li>
-<p>If there’s only one tag somewhere in the script, the script is
-split into two chunks:</p>
-<ul>
-<li><p>Everything before the tag becomes the first chunk (even if
-untagged).</p></li>
-<li><p>The tagged line and everything after it become the second
-chunk.</p></li>
+<code>$type</code>: the execution type (e.g.,
+<code>"query"</code>)</li>
+<li>
+<code>$name</code>: the chunk name</li>
+<li>
+<code>$sql</code>: the SQL body</li>
+<li>
+<code>$tags</code>: any additional tags</li>
+<li>
+<code>$results</code>: <code>NULL</code> before execution; populated
+after</li>
 </ul>
-</li>
-</ul>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Step 2: Execute the parsed workflow</span></span>
+<span><span class="va">executed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qryflow_execute.html">qryflow_execute</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">workflow</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">executed</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "qryflow"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">executed</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "drop_cyl_6" "prep_cyl_6" "df_mtcars"  "df_cyl_6"</span></span>
+<span><span class="va">executed</span></span>
+<span><span class="co">#&gt; ── qryflow ───────────────────────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt;   chunks: 4 | status: success | duration: 0s </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   drop_cyl_6  [exec ]  ✓ success  0s</span></span>
+<span><span class="co">#&gt;   prep_cyl_6  [exec ]  ✓ success  0s</span></span>
+<span><span class="co">#&gt;   df_mtcars   [query]  ✓ success  0s</span></span>
+<span><span class="co">#&gt;   df_cyl_6    [query]  ✓ success  0s</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
+</h2>
+<p>Both the worfklow object (<code>qryflow</code>) and the chunk objects
+(<code>qryflow_chunk</code>) store metadata about the execution. You can
+access this information with the <code><a href="../reference/qryflow_meta.html">qryflow_meta()</a></code>
+function:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/qryflow_meta.html">qryflow_meta</a></span><span class="op">(</span><span class="va">executed</span><span class="op">)</span> <span class="co"># The whole workflow</span></span>
+<span><span class="co">#&gt; $source</span></span>
+<span><span class="co">#&gt; [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n\n-- @exec: prep_cyl_6\nCREATE TABLE cyl_6 AS\nSELECT *\nFROM mtcars\nWHERE cyl = 6;\n\n-- @query: df_mtcars\nSELECT *\nFROM mtcars;\n\n-- @query: df_cyl_6\nSELECT *\nFROM cyl_6;\n"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $start_time</span></span>
+<span><span class="co">#&gt; [1] "2026-03-01 21:43:05 UTC"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $end_time</span></span>
+<span><span class="co">#&gt; [1] "2026-03-01 21:43:05 UTC"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $duration</span></span>
+<span><span class="co">#&gt; [1] 0.00198698</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $status</span></span>
+<span><span class="co">#&gt; [1] "success"</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/qryflow_meta.html">qryflow_meta</a></span><span class="op">(</span><span class="va">executed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="co"># The whole chunk</span></span>
+<span><span class="co">#&gt; $source</span></span>
+<span><span class="co">#&gt; [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $start_time</span></span>
+<span><span class="co">#&gt; [1] "2026-03-01 21:43:05 UTC"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $end_time</span></span>
+<span><span class="co">#&gt; [1] "2026-03-01 21:43:05 UTC"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $duration</span></span>
+<span><span class="co">#&gt; [1] 0.0004687309</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $status</span></span>
+<span><span class="co">#&gt; [1] "success"</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>What it does</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/qryflow.html">qryflow()</a></code></td>
+<td>Parse + execute + return query results.</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/qryflow_run.html">qryflow_run()</a></code></td>
+<td>Parse + execute, returning a full <code>qryflow</code> object with
+metadata.</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/qryflow_results.html">qryflow_results()</a></code></td>
+<td>Extract query results from a <code>qryflow</code> object.</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/qryflow_parse.html">qryflow_parse()</a></code></td>
+<td>Parse SQL into structured <code>qryflow</code> object - No
+execution.</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/qryflow_execute.html">qryflow_execute()</a></code></td>
+<td>Execute a parsed <code>qryflow</code> object against a
+connection.</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/qryflow_meta.html">qryflow_meta()</a></code></td>
+<td>Access metadata (status, duration, timing) on a workflow or
+chunk.</td>
+</tr>
+</tbody>
+</table>
+<p>For a guide on registering custom chunk types and extending
+<code>qryflow</code>’s behaviour, see
+<code><a href="../articles/extend-qryflow.html">vignette("extend-qryflow", package = "qryflow")</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
 <p><strong>Example 1 - Script with no tags</strong></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> cyl_6 <span class="kw">AS</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> cyl_6 <span class="kw">AS</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span></code></pre></div>
 <p>Result - The entire script is one chunk containing all lines.</p>
 <ul>
 <li>Why? Without tags, <code>qryflow</code> treats the whole script as a
 single step.</li>
 </ul>
 <p><strong>Example 2 - Script with one tag at the start</strong></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">-- @query: get_6cyl</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co">-- @query: get_6cyl</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span></code></pre></div>
 <p>Result - One chunk starting at the tag, containing the rest of the
 script.</p>
 <p>Because the tag is at line 1, the chunk starts there and continues to
 the end.</p>
 <p><strong>Example 3 - Script with one tag in the middle</strong></p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">-- @query: df_mtcars</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">-- @query: df_mtcars</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span></code></pre></div>
 <p>Result - Two chunks:</p>
 <ul>
 <li><p>Chunk 1: lines before the tag (untagged SQL).</p></li>
@@ -325,47 +578,28 @@ the end.</p>
 </ul>
 <p>This preserves any pre-tag SQL as a separate chunk.</p>
 <p><strong>Example 4 - Script with multiple tags</strong></p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">-- @exec: drop_cyl_6</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> cyl_6;</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">-- @exec: prep_cyl_6</span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> cyl_6 <span class="kw">AS</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a></span>
-<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">-- @query: df_mtcars</span></span>
-<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span>
-<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">-- @query: df_cyl_6</span></span>
-<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="kw">FROM</span> cyl_6</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co">-- @exec: drop_cyl_6</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> cyl_6;</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="co">-- @exec: prep_cyl_6</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> cyl_6 <span class="kw">AS</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="kw">FROM</span> mtcars</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="kw">WHERE</span> cyl <span class="op">=</span> <span class="dv">6</span>;</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="co">-- @query: df_mtcars</span></span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="kw">FROM</span> mtcars;</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a><span class="co">-- @query: df_cyl_6</span></span>
+<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a><span class="kw">FROM</span> cyl_6</span></code></pre></div>
 <ul>
 <li><p>Result - Four chunks, each starting at its respective tag
 line.</p></li>
 <li><p>Each chunk is parsed and executed independently in
 sequence.</p></li>
 </ul>
-</div>
-</div>
-<div class="section level2">
-<h2 id="type-identification">Type Identification<a class="anchor" aria-label="anchor" href="#type-identification"></a>
-</h2>
-<p>Before a chunk is parsed or executed, <code>qryflow</code> determines
-its type using the following rules:</p>
-<ol style="list-style-type: decimal">
-<li><p>If a chunk includes an explicit <code>-- @type:</code> tag, that
-value is used as the chunk type.</p></li>
-<li><p>If there is no <code>@type:</code> tag, <code>qryflow</code>
-checks for any other tag (<code>@query:</code>, <code>@exec:</code>,
-etc.) that matches a registered type. The first match found is used as
-the type.</p></li>
-<li><p>If no recognized tag is found, the type defaults to the value of
-<code>getOption("qryflow.default.type", "query")</code>.</p></li>
-</ol>
-<p>Note that formally, “query” is the default type of
-<code>qryflow</code> if the option is not overridden.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

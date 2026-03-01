@@ -58,7 +58,7 @@ qryflow_execute(
 ## Value
 
 An object of class `qryflow`, containing executed chunks with results
-and a `meta` field that includes timing and source information.
+and a `meta` attribute that includes timing and source information.
 
 ## See also
 

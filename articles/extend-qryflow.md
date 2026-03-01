@@ -6,16 +6,13 @@ library(qryflow)
 
 ## Overview
 
-`qryflow` was designed to be easily extended and allows users to define
+`qryflow` is designed to be easily extended, allowing users to define
 custom chunk types. This vignette provides relevant background knowledge
 on how `qryflow` works under the hood, then walks through how to create
 and register custom chunk types.
 
 This vignette assumes the knowledge found in the “Getting Started”
-(`vignette("getting-started", package = "qryflow")`) and “Advanced
-Usage”
-([`vignette("advanced-qryflow", package = "qryflow")`](https://christian-million.github.io/qryflow/articles/advanced-qryflow.md))
-vignettes.
+(`vignette("getting-started", package = "qryflow")`) vignette.
 
 ## Big Picture: How `qryflow` Works
 
@@ -39,12 +36,8 @@ To support a new chunk type, you’ll need to:
 
 ## Creating Handlers
 
-Each chunk type needs to have an associated handler. This section
-outlines what arguments the custom handler functions need to accept,
-what operations it should perform, and what results it should return.
-
-Handlers accepts both a `qryflow_chunk` object and a database connection
-object (e.g.,
+Each chunk type needs to have an associated handler. Handlers accept
+both a `qryflow_chunk` object and a database connection object (e.g.,
 [`DBI::dbConnect`](https://dbi.r-dbi.org/reference/dbConnect.html)).
 They should execute the SQL as appropriate and then return the result:
 
@@ -61,7 +54,8 @@ qryflow_exec_handler <- function(con, chunk, ...) {
 }
 ```
 
-After a custom handler has been created, it needs to be registered.
+After a custom handler has been created, it needs to be validated and
+registered.
 
 ### Validate the Handler
 
@@ -81,11 +75,11 @@ validate_qryflow_handler(qryflow_exec_handler)
 ```
 
 Note: This does not test that the code within your function is correct
-nor does it test what output each function is expected to produce.
+nor does it verify the correct output type.
 
 ## How the Registry Works
 
-`qryflow` maintains and internal environment called `.qryflow_handlers`
+`qryflow` maintains an internal environment called `.qryflow_handlers`
 to store registered chunk handlers.
 
 When the package is loaded, default types like “`query`” and “`exec`”

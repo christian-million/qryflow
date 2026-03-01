@@ -34,8 +34,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/advanced-qryflow.html">Advanced Usage with qryflow</a></li>
-    <li><a class="dropdown-item" href="../articles/extend-qryflow.html">Extending qryflow Functionality</a></li>
+<li><a class="dropdown-item" href="../articles/extend-qryflow.html">Extending qryflow Functionality</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -72,15 +71,13 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><code>qryflow</code> was designed to be easily extended and allows
+<p><code>qryflow</code> is designed to be easily extended, allowing
 users to define custom chunk types. This vignette provides relevant
 background knowledge on how <code>qryflow</code> works under the hood,
 then walks through how to create and register custom chunk types.</p>
 <p>This vignette assumes the knowledge found in the “Getting Started”
-(<code>vignette("getting-started", package = "qryflow")</code>) and
-“Advanced Usage”
-(<code><a href="../articles/advanced-qryflow.html">vignette("advanced-qryflow", package = "qryflow")</a></code>)
-vignettes.</p>
+(<code>vignette("getting-started", package = "qryflow")</code>)
+vignette.</p>
 </div>
 <div class="section level2">
 <h2 id="big-picture-how-qryflow-works">Big Picture: How <code>qryflow</code> Works<a class="anchor" aria-label="anchor" href="#big-picture-how-qryflow-works"></a>
@@ -105,13 +102,10 @@ so the package knows how to process it.</p></li>
 <div class="section level2">
 <h2 id="creating-handlers">Creating Handlers<a class="anchor" aria-label="anchor" href="#creating-handlers"></a>
 </h2>
-<p>Each chunk type needs to have an associated handler. This section
-outlines what arguments the custom handler functions need to accept,
-what operations it should perform, and what results it should
-return.</p>
-<p>Handlers accepts both a <code>qryflow_chunk</code> object and a
-database connection object (e.g., <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">DBI::dbConnect</a></code>). They
-should execute the SQL as appropriate and then return the result:</p>
+<p>Each chunk type needs to have an associated handler. Handlers accept
+both a <code>qryflow_chunk</code> object and a database connection
+object (e.g., <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">DBI::dbConnect</a></code>). They should execute the SQL
+as appropriate and then return the result:</p>
 <p>This is the handler for the “exec” type:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qryflow_exec_handler</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">con</span>, <span class="va">chunk</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
@@ -122,7 +116,7 @@ should execute the SQL as appropriate and then return the result:</p>
 <span>  <span class="co"># Return the result</span></span>
 <span>  <span class="va">result</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>After a custom handler has been created, it needs to be
+<p>After a custom handler has been created, it needs to be validated and
 registered.</p>
 <div class="section level3">
 <h3 id="validate-the-handler">Validate the Handler<a class="anchor" aria-label="anchor" href="#validate-the-handler"></a>
@@ -138,14 +132,13 @@ occur if:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/validate_qryflow_handler.html">validate_qryflow_handler</a></span><span class="op">(</span><span class="va">qryflow_exec_handler</span><span class="op">)</span></span></code></pre></div>
 <p>Note: This does not test that the code within your function is
-correct nor does it test what output each function is expected to
-produce.</p>
+correct nor does it verify the correct output type.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="how-the-registry-works">How the Registry Works<a class="anchor" aria-label="anchor" href="#how-the-registry-works"></a>
 </h2>
-<p><code>qryflow</code> maintains and internal environment called
+<p><code>qryflow</code> maintains an internal environment called
 <code>.qryflow_handlers</code> to store registered chunk handlers.</p>
 <p>When the package is loaded, default types like “<code>query</code>”
 and “<code>exec</code>” are automatically registered. You can register

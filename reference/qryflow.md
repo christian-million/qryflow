@@ -1,12 +1,12 @@
 # Run a multi-step SQL workflow and return query results
 
-`qryflow()` is the main entry point to the `qryflow` package. It
-executes a SQL workflow defined in a tagged `.sql` script or character
-string and returns query results as R objects.
+`qryflow()` is high level convenience function. It executes a SQL
+workflow defined in a tagged `.sql` script or character string and
+returns query results as R objects.
 
-The SQL script can contain multiple steps tagged with `@query` or
-`@exec`. Query results are captured and returned as a named list, where
-names correspond to the `@query` tags.
+The SQL script can contain multiple-steps (chunks), each tagged with
+`@query` or `@exec`. Query results are captured and returned as a named
+list, where names correspond to the `@query` tags.
 
 ## Usage
 
@@ -18,7 +18,7 @@ qryflow(
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
   simplify = TRUE,
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 ```
 
@@ -65,12 +65,12 @@ qryflow(
 - default_type:
 
   The default chunk type (defaults to "query"). The global default can
-  be set with `options(qryflow.verbose = TRUE)`.
+  be set with `options(qryflow.default_type = 'query')`.
 
 ## Value
 
-A named list of query results, or a single result if `simplify = TRUE`
-and only one chunk exists.
+(Invisibly) A named list of query results, or a single result if
+`simplify = TRUE` and only one chunk exists.
 
 ## Details
 
@@ -91,7 +91,6 @@ to only include the results of the SQL.
 
 ``` r
 con <- example_db_connect(mtcars)
-
 filepath <- example_sql_path("mtcars.sql")
 
 results <- qryflow(con, filepath)

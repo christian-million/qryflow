@@ -23,6 +23,9 @@ and retrieve structured results.
 - [`qryflow_execute()`](https://christian-million.github.io/qryflow/reference/qryflow_execute.md)
   : Execute a parsed qryflow SQL workflow
 
+- [`qryflow_meta()`](https://christian-million.github.io/qryflow/reference/qryflow_meta.md)
+  : Extract metadata from qryflow objects
+
 ## Registration
 
 Functions that allow users to register custom types and inspect the

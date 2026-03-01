@@ -4,10 +4,13 @@
 string, parses it into tagged statements, and executes those statements
 against a database connection.
 
-This function is typically used internally by
-[`qryflow()`](https://christian-million.github.io/qryflow/reference/qryflow.md),
-but can also be called directly for more control over workflow
-execution.
+This function might be preferable for those who want a `qryflow`
+execution to consistently return a `qryflow` object. Whereas the
+[`qryflow()`](https://christian-million.github.io/qryflow/reference/qryflow.md)
+function may return a list or other objects, depending on the arguments,
+`qryflow_run()` always returns a `qryflow` object. Results can be
+extracted using
+[`qryflow_results()`](https://christian-million.github.io/qryflow/reference/qryflow_results.md).
 
 ## Usage
 
@@ -62,9 +65,9 @@ qryflow_run(
 
 ## Value
 
-A list representing the evaluated workflow, containing query results,
-execution metadata, or both, depending on the contents of the SQL
-script.
+(Invisibly) A list representing the evaluated workflow, containing query
+results, execution metadata, or both, depending on the contents of the
+SQL script.
 
 ## See also
 

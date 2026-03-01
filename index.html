@@ -36,8 +36,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/advanced-qryflow.html">Advanced Usage with qryflow</a></li>
-    <li><a class="dropdown-item" href="articles/extend-qryflow.html">Extending qryflow Functionality</a></li>
+<li><a class="dropdown-item" href="articles/extend-qryflow.html">Extending qryflow Functionality</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -62,13 +61,11 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Execute multi-step ‘SQL’ statements using specially formatted comments that define and control execution.</p>
-<p><code>qryflow</code> lets you define <strong>multi-step SQL workflows</strong> using comment-based tags in your SQL code. These tags tell R how to execute each SQL chunk and what to name the results. This allows you to:</p>
+<p><code>qryflow</code> lets you write multi-step SQL workflows in plain <code>.sql</code> files and run them from R with a single function call. Specially formatted tags tell R how to execute each SQL chunk and what to name the results. This allows you to:</p>
 <ul>
 <li><p>Keep multiple SQL statements in the same file.</p></li>
 <li><p>Control how each SQL “chunk” is executed.</p></li>
 <li><p>Return results as named R objects.</p></li>
-<li><p>Extend behavior using custom tags, parsers, and handlers.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -85,7 +82,6 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>The code below demonstrates the primary use case for <code>qryflow</code>.</p>
 <p>Basic Usage:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://christian-million.github.io/qryflow/">qryflow</a></span><span class="op">)</span></span>
@@ -113,7 +109,17 @@
 <span><span class="st">"</span></span>
 <span></span>
 <span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">sql</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running 4 chunks</span></span>
+<span><span class="co">#&gt; [1/4] drop_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [2/4] prep_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [3/4] df_mtcars [query]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [4/4] df_cyl_6 [query]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; Done in 0.01s — 4 success, 0 error, 0 skipped</span></span>
 <span></span>
 <span><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
@@ -129,11 +135,20 @@
 <code class="sourceCode R"><span><span class="va">filepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_sql_path.html">example_sql_path</a></span><span class="op">(</span><span class="st">'mtcars.sql'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">filepath</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qryflow.html">qryflow</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">filepath</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running 4 chunks</span></span>
+<span><span class="co">#&gt; [1/4] drop_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [2/4] prep_cyl_6 [exec]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [3/4] df_mtcars [query]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; [4/4] df_cyl_6 [query]</span></span>
+<span><span class="co">#&gt;       ✓ success  0s</span></span>
+<span><span class="co">#&gt; Done in 0.01s — 4 success, 0 error, 0 skipped</span></span>
 <span></span>
 <span><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
-<span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">df_cyl_6</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span></span>
 <span><span class="co">#&gt; 1 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4</span></span>
 <span><span class="co">#&gt; 2 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4</span></span>
@@ -148,7 +163,7 @@
 <p>Consider the following vignettes for a more in depth understanding:</p>
 <ul>
 <li><p>Getting Started: Outlines available features, how to use <code>qryflow</code>, and provides an operational understanding of how it works (<code>vignette("getting-started", package = "qryflow")</code>).</p></li>
-<li><p>Advanced Usage: A look under the hood at the objects and classes that power <code>qryflow</code> so that you can get more out of the package (<code><a href="articles/advanced-qryflow.html">vignette("advanced-qryflow", package = "qryflow")</a></code>).</p></li>
+<li><p>Advanced Usage: A look under the hood at the objects and classes that power <code>qryflow</code> so that you can get more out of the package (<code><a href="https://christian-million.github.io/qryflow/articles/advanced-qryflow.html">vignette("advanced-qryflow", package = "qryflow")</a></code>).</p></li>
 <li><p>Extend <code>qryflow</code>: A guide to understanding how to implement custom tags, or override the built-in tags, using custom chunk handlers (<code><a href="articles/extend-qryflow.html">vignette("extend-qryflow", package = "qryflow")</a></code>).</p></li>
 </ul>
 </div>
@@ -200,7 +215,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/christian-million/qryflow" class="external-link"><img src="https://codecov.io/gh/christian-million/qryflow/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://cran.r-project.org/package=qryflow" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/qryflow" alt="Downloads"></a></li>
+<li><a href="https://cran.r-project.org/package=qryflow" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/qryflow" alt="Downloads"></a></li>
 <li><a href="https://cran.r-project.org/package=qryflow" class="external-link"><img src="https://www.r-pkg.org/badges/version/qryflow" alt="CRAN status"></a></li>
 </ul>
 </div>

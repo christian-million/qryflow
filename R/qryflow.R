@@ -1,10 +1,10 @@
 #' Run a multi-step SQL workflow and return query results
 #'
 #' @description
-#' `qryflow()` is the main entry point to the `qryflow` package. It executes a SQL workflow
+#' `qryflow()` is high level convenience function. It executes a SQL workflow
 #' defined in a tagged `.sql` script or character string and returns query results as R objects.
 #'
-#' The SQL script can contain multiple steps tagged with `@query` or `@exec`. Query results
+#' The SQL script can contain multiple-steps (chunks), each tagged with `@query` or `@exec`. Query results
 #' are captured and returned as a named list, where names correspond to the `@query` tags.
 #'
 #' @details
@@ -34,7 +34,6 @@
 #' @seealso [`qryflow_run()`], [`qryflow_results()`]
 #' @examples
 #' con <- example_db_connect(mtcars)
-#'
 #' filepath <- example_sql_path("mtcars.sql")
 #'
 #' results <- qryflow(con, filepath)
@@ -72,8 +71,8 @@ qryflow <- function(
 #' `qryflow_run()` reads a SQL workflow from a file path or character string, parses it into
 #' tagged statements, and executes those statements against a database connection.
 #'
-#' This function is typically used internally by [`qryflow()`], but can also be called directly
-#' for more control over workflow execution.
+#' This function might be preferable for those who want a `qryflow` execution to consistently return a `qryflow` object. Whereas the `qryflow()` function
+#' may return a list or other objects, depending on the arguments, `qryflow_run()` always returns a `qryflow` object. Results can be extracted using `qryflow_results()`.
 #'
 #' @param con A database connection from [DBI::dbConnect()]
 #' @param sql A character string representing either the path to a `.sql` file or raw SQL content.

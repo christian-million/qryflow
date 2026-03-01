@@ -38,7 +38,7 @@ init_meta <- function(source = NULL) {
     start_time = NULL,
     end_time = NULL,
     duration = NULL,
-    status = NULL
+    status = "init"
   )
 }
 

@@ -21,7 +21,7 @@
 #'   Defaults to `FALSE`. The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #'
-#' @returns An object of class `qryflow`, containing executed chunks with results and a `meta` field
+#' @returns An object of class `qryflow`, containing executed chunks with results and a `meta` attribute
 #'   that includes timing and source information.
 #'
 #' @seealso [`qryflow_run()`], [`qryflow_parse()`]

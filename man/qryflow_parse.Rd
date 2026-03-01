@@ -23,8 +23,8 @@ An object of class \code{qryflow_workflow}, which is a structured list of SQL ch
 metadata.
 }
 \description{
-\code{qryflow_parse()} reads a SQL workflow file or character vector and parses it into
-discrete tagged chunks based on \verb{@query}, \verb{@exec}, and other custom markers.
+\code{qryflow_parse()} reads a SQL file or character vector and parses it into
+discrete chunks based on \verb{@query}, \verb{@exec}, and other custom markers.
 }
 \details{
 This function is used internally by \code{\link[=qryflow_run]{qryflow_run()}}, but can also be used directly to

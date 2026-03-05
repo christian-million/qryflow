@@ -2,6 +2,8 @@
 
 ``` r
 library(qryflow)
+#> Warning: S3 methods 'as.data.frame.qryflow_chunk', 'as.list.qryflow_chunk' were
+#> declared in NAMESPACE but not found
 ```
 
 ## What is `qryflow`?
@@ -383,7 +385,7 @@ names(workflow)
 # Inspect a chunk before execution
 workflow$df_mtcars
 #> ── qryflow_chunk: df_mtcars ──────────────────────────────────────────────────── 
-#>   type: query | 
+#>   type: query |   pending  
 #> 
 #>   SELECT *
 #>   FROM mtcars;
@@ -429,16 +431,19 @@ qryflow_meta(executed) # The whole workflow
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n\n-- @exec: prep_cyl_6\nCREATE TABLE cyl_6 AS\nSELECT *\nFROM mtcars\nWHERE cyl = 6;\n\n-- @query: df_mtcars\nSELECT *\nFROM mtcars;\n\n-- @query: df_cyl_6\nSELECT *\nFROM cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-01 21:43:05 UTC"
+#> [1] "2026-03-05 13:48:03 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-01 21:43:05 UTC"
+#> [1] "2026-03-05 13:48:03 UTC"
 #> 
 #> $duration
-#> [1] 0.00198698
+#> [1] 0.001842976
 #> 
 #> $status
 #> [1] "success"
+#> 
+#> $error_msg
+#> NULL
 ```
 
 ``` r
@@ -447,16 +452,19 @@ qryflow_meta(executed[[1]]) # The whole chunk
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-01 21:43:05 UTC"
+#> [1] "2026-03-05 13:48:03 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-01 21:43:05 UTC"
+#> [1] "2026-03-05 13:48:03 UTC"
 #> 
 #> $duration
-#> [1] 0.0004687309
+#> [1] 0.0004549026
 #> 
 #> $status
 #> [1] "success"
+#> 
+#> $error_msg
+#> NULL
 ```
 
 ## Summary

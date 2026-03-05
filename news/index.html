@@ -39,6 +39,28 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="qryflow-development-version">qryflow (development version)<a class="anchor" aria-label="anchor" href="#qryflow-development-version"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li><p>The <code>source</code> argument has been removed from <code><a href="../reference/qryflow_execute.html">qryflow_execute()</a></code>. Source information is now stored automatically in chunk metadata during parsing.</p></li>
+<li><p><code>qryflow_default_type()</code> has been removed as a standalone exported function. Default type is now controlled directly via the <code>default_type</code> argument in <code><a href="../reference/qryflow.html">qryflow()</a></code>, <code><a href="../reference/qryflow_run.html">qryflow_run()</a></code>, and <code><a href="../reference/qryflow_parse.html">qryflow_parse()</a></code>, or through the global option <code>options(qryflow.default_type = "query")</code>. Note: the option key has changed from <code>qryflow.default.type</code> to <code>qryflow.default_type</code>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li><p><code>on_error</code> argument added to <code><a href="../reference/qryflow.html">qryflow()</a></code>, <code><a href="../reference/qryflow_run.html">qryflow_run()</a></code>, and <code><a href="../reference/qryflow_execute.html">qryflow_execute()</a></code>. Controls behavior when a chunk fails during execution. Accepts <code>"stop"</code> (default, halts immediately), <code>"warn"</code> (signals a warning and continues), or <code>"collect"</code> (runs all chunks and reports all errors together at the end). (<a href="https://github.com/christian-million/qryflow/issues/11" class="external-link">#11</a> and <a href="https://github.com/christian-million/qryflow/issues/12" class="external-link">#12</a></p></li>
+<li><p><code>verbose</code> argument added to <code><a href="../reference/qryflow.html">qryflow()</a></code>, <code><a href="../reference/qryflow_run.html">qryflow_run()</a></code>, and <code><a href="../reference/qryflow_execute.html">qryflow_execute()</a></code>. When <code>TRUE</code>, emits a progress message before each chunk and a summary upon completion showing total runtime, successes, errors, and skipped chunks. Defaults to <code>FALSE</code>. Can be enabled globally with <code>options(qryflow.verbose = TRUE)</code>. ([<a href="https://github.com/christian-million/qryflow/issues/8" class="external-link">#8</a>])</p></li>
+<li><p><code>default_type</code> argument added to <code><a href="../reference/qryflow.html">qryflow()</a></code>, <code><a href="../reference/qryflow_run.html">qryflow_run()</a></code>, and <code><a href="../reference/qryflow_parse.html">qryflow_parse()</a></code>. Determines the chunk type assigned to untagged chunks. Defaults to <code>"query"</code>. Can be set globally with <code>options(qryflow.default_type = "query")</code>.</p></li>
+<li><p><code><a href="../reference/qryflow_meta.html">qryflow_meta()</a></code> is now an exported function for accessing execution metadata (status, duration, start/end times, error messages) from both <code>qryflow</code> workflow objects and individual <code>qryflow_chunk</code> objects.</p></li>
+<li><p><code>validate_con_arg()</code> is now called internally by <code><a href="../reference/qryflow_execute.html">qryflow_execute()</a></code> to provide clear, actionable error messages when the connection argument is missing, invalid, or disconnected.</p></li>
+<li><p>Workflow-level execution status is now tracked and stored in metadata. A completed workflow is assigned a status of <code>"success"</code> if all chunks succeeded, or <code>"partial"</code> if any chunk encountered an error.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal-changes-development-version">Internal Changes<a class="anchor" aria-label="anchor" href="#internal-changes-development-version"></a></h3>
+<ul><li><p>Combined <code>qryflow_workflow</code> and <code>qryflow_results</code> into single object. ([<a href="https://github.com/christian-million/qryflow/issues/14" class="external-link">#14</a>])</p></li>
+<li><p>Added <code>cli.R</code> with verbose helpers (<code>report_workflow_start()</code>, <code>report_chunk_start()</code>, <code>report_chunk_end()</code>, <code>report_workflow_end()</code>).</p></li>
+<li><p>Added <code>on-error.R</code> consolidating error dispatch logic (<code>validate_on_error()</code>, <code>dispatch_on_error()</code>, <code>dispatch_collected_errors()</code>) supporting the new <code>on_error</code> argument.</p></li>
+<li><p>Metadata handling has been refactored into <code>meta.R</code>, centralizing time tracking and duration formatting used across workflow and chunk objects.</p></li>
+<li><p>Updated documentation, vignettes, and README to reflect new arguments and removed functions.</p></li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="qryflow-030">qryflow 0.3.0<a class="anchor" aria-label="anchor" href="#qryflow-030"></a></h2>

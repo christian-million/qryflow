@@ -21,7 +21,7 @@ qryflow_run(
   ...,
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 ```
 
@@ -61,7 +61,7 @@ qryflow_run(
 - default_type:
 
   The default chunk type (defaults to "query"). The global default can
-  be set with `options(qryflow.verbose = TRUE)`.
+  be set with `options(qryflow.default_type = TRUE)`.
 
 ## Value
 

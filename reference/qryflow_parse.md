@@ -10,7 +10,7 @@ markers.
 qryflow_parse(
   sql,
   ...,
-  default_type = getOption("qryflow.default.type", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 ```
 
@@ -28,12 +28,12 @@ qryflow_parse(
 - default_type:
 
   The default chunk type (defaults to "query"). The global default can
-  be set with `options(qryflow.verbose = TRUE)`.
+  be set with `options(qryflow.default_type = "query")`.
 
 ## Value
 
-An object of class `qryflow_workflow`, which is a structured list of SQL
-chunks and metadata.
+An object of class `qryflow`, which is a structured list of SQL chunks
+and metadata.
 
 ## Details
 

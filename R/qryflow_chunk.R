@@ -61,12 +61,10 @@ print.qryflow_chunk <- function(x, ...) {
     cat("  tags: ", tag_str, "\n", sep = "")
   }
 
-  # Error Message
-  if (!is.null(meta$error_message)) {
-    cat("  error: ", meta$error_message, "\n", sep = "")
+  if (!is.null(meta$error_msg)) {
+    cat("  error: ", meta$error_msg, "\n", sep = "")
   }
 
-  # SQL Preview
   cat("\n")
 
   sql_lines <- strsplit(x$sql, "\n")[[1]]
@@ -84,15 +82,4 @@ print.qryflow_chunk <- function(x, ...) {
 
   cat("\n")
   invisible(x)
-}
-
-#' @export
-as.list.qryflow_chunk <- function(x, ...) {
-  unclass(x)
-}
-
-#' @export
-as.data.frame.qryflow_chunk <- function(x, ...) {
-  l <- as.list(x)
-  as.data.frame(l, ...)
 }

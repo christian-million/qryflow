@@ -146,7 +146,7 @@ qryflow_execute <- function(
 }
 
 validate_con_arg <- function(con) {
-  if (!inherits(con, "DBIConnection")) {
+  if (!inherits(con, c("DBIConnection", "Pool"))) {
     stop_qryflow("'con' must be a DBI connection object from DBI::dbConnect().")
   }
   if (!DBI::dbIsValid(con)) {

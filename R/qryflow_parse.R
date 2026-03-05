@@ -9,9 +9,9 @@
 #' @param sql A file path to a SQL workflow file, or a character vector containing SQL lines.
 #' @param ... Reserved for future use.
 #' @param default_type The default chunk type (defaults to "query"). The global default can be set with
-#'   `options(qryflow.verbose = TRUE)`.
+#'   `options(qryflow.default_type = "query")`.
 #'
-#' @returns An object of class `qryflow_workflow`, which is a structured list of SQL chunks and
+#' @returns An object of class `qryflow`, which is a structured list of SQL chunks and
 #'   metadata.
 #'
 #' @seealso [`qryflow()`], [`qryflow_run()`], [`qryflow_execute()`]
@@ -24,7 +24,7 @@
 qryflow_parse <- function(
   sql,
   ...,
-  default_type = getOption("qryflow.default.type", "query")
+  default_type = getOption("qryflow.default_type", "query")
 ) {
   statement <- read_sql_lines(sql)
   default_type <- validate_qryflow_type(default_type)

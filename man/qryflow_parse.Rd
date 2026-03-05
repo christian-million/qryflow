@@ -7,7 +7,7 @@
 qryflow_parse(
   sql,
   ...,
-  default_type = getOption("qryflow.default.type", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 }
 \arguments{
@@ -16,10 +16,10 @@ qryflow_parse(
 \item{...}{Reserved for future use.}
 
 \item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
-\code{options(qryflow.verbose = TRUE)}.}
+\code{options(qryflow.default_type = "query")}.}
 }
 \value{
-An object of class \code{qryflow_workflow}, which is a structured list of SQL chunks and
+An object of class \code{qryflow}, which is a structured list of SQL chunks and
 metadata.
 }
 \description{

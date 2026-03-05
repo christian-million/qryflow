@@ -38,7 +38,7 @@ report_workflow_end <- function(x, verbose = NULL) {
   statuses <- vapply(
     x,
     function(c) {
-      if (is.null(qryflow_meta(x)$status)) "pending" else qryflow_meta(x)$status
+      if (is.null(qryflow_meta(c)$status)) "pending" else qryflow_meta(x)$status
     },
     character(1)
   )

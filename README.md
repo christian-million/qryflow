@@ -132,10 +132,6 @@ Consider the following vignettes for a more in depth understanding:
   and provides an operational understanding of how it works
   (`vignette("getting-started", package = "qryflow")`).
 
-- Advanced Usage: A look under the hood at the objects and classes that
-  power `qryflow` so that you can get more out of the package
-  (`vignette("advanced-qryflow", package = "qryflow")`).
-
 - Extend `qryflow`: A guide to understanding how to implement custom
   tags, or override the built-in tags, using custom chunk handlers
   (`vignette("extend-qryflow", package = "qryflow")`).

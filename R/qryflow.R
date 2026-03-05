@@ -88,7 +88,7 @@ qryflow <- function(
 #'   Defaults to `FALSE`. The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #' @param default_type The default chunk type (defaults to "query"). The global default can be set with
-#'   `options(qryflow.verbose = TRUE)`.
+#'   `options(qryflow.default_type = TRUE)`.
 #'
 #' @returns (Invisibly) A list representing the evaluated workflow, containing query results, execution metadata,
 #'   or both, depending on the contents of the SQL script.
@@ -117,7 +117,7 @@ qryflow_run <- function(
   ...,
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 ) {
   on_error <- validate_on_error(on_error)
   obj <- qryflow_run_(

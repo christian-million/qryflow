@@ -64,3 +64,69 @@ test_that("qryflow_results() returns data.frame when simplify=TRUE and 1 chunk",
 
   expect_s3_class(results, "data.frame")
 })
+
+
+## Test Global Options
+### qryflow.verbose
+test_that("qryflow() respects qryflow.verbose global option when TRUE", {
+  con <- example_db_connect(mtcars)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  sql <- "-- @query: result\nSELECT * FROM mtcars LIMIT 1;"
+
+  old_verbose <- getOption("qryflow.verbose")
+  on.exit(options(qryflow.verbose = old_verbose), add = TRUE)
+
+  options(qryflow.verbose = TRUE)
+
+  expect_message(
+    qryflow(con, sql, verbose = getOption("qryflow.verbose"))
+  )
+})
+
+test_that("qryflow() verbose argument overrides global option", {
+  con <- example_db_connect(mtcars)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  sql <- "-- @query: result\nSELECT * FROM mtcars;"
+
+  # Set global option to FALSE
+  old_verbose <- getOption("qryflow.verbose")
+  on.exit(options(qryflow.verbose = old_verbose), add = TRUE)
+
+  options(qryflow.verbose = FALSE)
+
+  expect_message(qryflow(con, sql, verbose = TRUE))
+  expect_silent(qryflow(con, sql, verbose = FALSE))
+})
+
+
+### qryflow.default_type
+test_that("qryflow_parse() respects qryflow.default_type global option", {
+  sql <- "-- @name: my_chunk\nSELECT * FROM mtcars;"
+
+  old_default_type <- getOption("qryflow.default_type")
+  on.exit(options(qryflow.default_type = old_default_type), add = TRUE)
+
+  options(qryflow.default_type = "exec")
+
+  parsed <- qryflow_parse(sql, default_type = getOption("qryflow.default_type"))
+
+  expect_equal(parsed[[1]]$type, "exec")
+})
+
+test_that("qryflow() default_type argument overrides global option", {
+  con <- example_db_connect(mtcars)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  sql <- "-- @name: my_chunk\nSELECT * FROM mtcars;"
+
+  old_default_type <- getOption("qryflow.default_type")
+  on.exit(options(qryflow.default_type = old_default_type), add = TRUE)
+
+  options(qryflow.default_type = "exec")
+
+  result <- qryflow(con, sql, default_type = "query")
+
+  expect_s3_class(result, "data.frame")
+})

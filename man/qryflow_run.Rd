@@ -10,7 +10,7 @@ qryflow_run(
   ...,
   on_error = c("stop", "warn", "collect"),
   verbose = getOption("qryflow.verbose", FALSE),
-  default_type = getOption("qryflow.verbose", "query")
+  default_type = getOption("qryflow.default_type", "query")
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ Defaults to \code{FALSE}. The global default can be set with
 \code{options(qryflow.verbose = TRUE)}.}
 
 \item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
-\code{options(qryflow.verbose = TRUE)}.}
+\code{options(qryflow.default_type = TRUE)}.}
 }
 \value{
 (Invisibly) A list representing the evaluated workflow, containing query results, execution metadata,

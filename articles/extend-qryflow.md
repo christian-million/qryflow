@@ -2,8 +2,6 @@
 
 ``` r
 library(qryflow)
-#> Warning: S3 methods 'as.data.frame.qryflow_chunk', 'as.list.qryflow_chunk' were
-#> declared in NAMESPACE but not found
 ```
 
 ## Overview

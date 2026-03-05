@@ -2,8 +2,6 @@
 
 ``` r
 library(qryflow)
-#> Warning: S3 methods 'as.data.frame.qryflow_chunk', 'as.list.qryflow_chunk' were
-#> declared in NAMESPACE but not found
 ```
 
 ## What is `qryflow`?
@@ -431,13 +429,13 @@ qryflow_meta(executed) # The whole workflow
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n\n-- @exec: prep_cyl_6\nCREATE TABLE cyl_6 AS\nSELECT *\nFROM mtcars\nWHERE cyl = 6;\n\n-- @query: df_mtcars\nSELECT *\nFROM mtcars;\n\n-- @query: df_cyl_6\nSELECT *\nFROM cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-05 13:48:03 UTC"
+#> [1] "2026-03-05 14:11:08 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-05 13:48:03 UTC"
+#> [1] "2026-03-05 14:11:08 UTC"
 #> 
 #> $duration
-#> [1] 0.001842976
+#> [1] 0.001922846
 #> 
 #> $status
 #> [1] "success"
@@ -452,13 +450,13 @@ qryflow_meta(executed[[1]]) # The whole chunk
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-05 13:48:03 UTC"
+#> [1] "2026-03-05 14:11:08 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-05 13:48:03 UTC"
+#> [1] "2026-03-05 14:11:08 UTC"
 #> 
 #> $duration
-#> [1] 0.0004549026
+#> [1] 0.0004839897
 #> 
 #> $status
 #> [1] "success"

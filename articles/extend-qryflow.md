@@ -99,10 +99,8 @@ ls_qryflow_types()
 ```
 
 Custom types must be re-registered each session. To make them
-persistent, add registration calls to your `.Rprofile` (see: [Managing R
-Startup](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html)),
-or create a small package with an `.onLoad()` hook (see: [R Packages
-(2e)](https://r-pkgs.org/code.html#sec-code-onLoad-onAttach)).
+persistent, add registration calls to your `.Rprofile`, or create a
+small package with an `.onLoad()` hook.
 
 ## Toy Example: Create `query-send` Chunk Type
 

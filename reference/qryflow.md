@@ -69,8 +69,8 @@ qryflow(
 
 ## Value
 
-(Invisibly) A named list of query results, or a single result if
-`simplify = TRUE` and only one chunk exists.
+A named list of query results, or a single result if `simplify = TRUE`
+and only one chunk exists.
 
 ## Details
 

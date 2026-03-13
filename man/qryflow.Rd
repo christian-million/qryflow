@@ -40,7 +40,7 @@ single result object.}
 \code{options(qryflow.default_type = 'query')}.}
 }
 \value{
-(Invisibly) A named list of query results, or a single result if \code{simplify = TRUE} and only one chunk exists.
+A named list of query results, or a single result if \code{simplify = TRUE} and only one chunk exists.
 }
 \description{
 \code{qryflow()} is high level convenience function. It executes a SQL workflow

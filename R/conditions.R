@@ -8,7 +8,7 @@ stop_qryflow_chunk <- function(message, chunk, workflow, call = NULL) {
   )
   err <- structure(
     list(
-      message = message,
+      message = paste0(message, "\n"),
       chunk = chunk,
       call = call,
       workflow = workflow
@@ -21,7 +21,7 @@ stop_qryflow_chunk <- function(message, chunk, workflow, call = NULL) {
 warn_qryflow_chunk <- function(message, chunk, call = NULL) {
   wrn <- structure(
     list(
-      message = message,
+      message = paste0(message, "\n"),
       call = call,
       chunk = chunk
     ),
@@ -33,7 +33,7 @@ warn_qryflow_chunk <- function(message, chunk, call = NULL) {
 stop_qryflow <- function(message, workflow = NULL, call = NULL, ...) {
   err <- structure(
     list(
-      message = message,
+      message = paste0(message, "\n"),
       call = call,
       workflow = workflow,
       ...
@@ -46,7 +46,7 @@ stop_qryflow <- function(message, workflow = NULL, call = NULL, ...) {
 warn_qryflow <- function(message, call = NULL, ...) {
   wrn <- structure(
     list(
-      message = message,
+      message = paste0(message, "\n"),
       call = call,
       ...
     ),
@@ -58,7 +58,7 @@ warn_qryflow <- function(message, call = NULL, ...) {
 message_qryflow <- function(message, call = NULL, ...) {
   msg <- structure(
     list(
-      message = message,
+      message = paste0(message, "\n"),
       call = call,
       ...
     ),

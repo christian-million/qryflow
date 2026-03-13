@@ -105,8 +105,7 @@ parse_single_chunk <- function(chunk) {
 
 parse_chunks <- function(chunks, default_type) {
   src <- lapply(chunks, parse_single_chunk)
-  src <- resolve_chunk_names(src)
-  src <- resolve_chunk_types(src, default_type)
+  src <- resolve_chunks(src, default_type)
 
   parsed_chunks <- vector("list", length(src))
 
@@ -129,80 +128,61 @@ parse_chunks <- function(chunks, default_type) {
   return(parsed_chunks)
 }
 
-resolve_chunk_names <- function(chunks) {
-  # Separate user-defined names from chunks needing auto-names
-  user_names <- vapply(
+resolve_chunks <- function(chunks, default_type) {
+  registered_types <- ls_qryflow_types()
+  defined_names <- vapply(
     chunks,
-    function(x) {
-      #previously name_or_na
-      if (is.null(x$name)) NA_character_ else x$name
-    },
+    function(x) if (is.null(x$name)) NA_character_ else x$name,
     character(1)
   )
 
-  # Error on duplicate user-defined names
-  defined_names <- user_names[!is.na(user_names)]
-  duplicates <- defined_names[duplicated(defined_names)]
+  duplicates <- defined_names[!is.na(defined_names) & duplicated(defined_names)]
   if (length(duplicates) > 0) {
     stop_qryflow(
-      "Duplicate chunk names found and will overwrite each other in results: ",
+      "Duplicate user provided chunk names found: ",
       paste(unique(duplicates), collapse = ", ")
     )
   }
 
-  # Assign auto-names to unnamed chunks, avoiding all known names
-  all_known_names <- defined_names
   auto_index <- 1
 
   for (i in seq_along(chunks)) {
-    if (is.na(user_names[i])) {
-      candidate <- paste0("unnamed_chunk_", auto_index)
+    notes <- character(0)
+    assigned_name <- FALSE
+    if (is.na(defined_names[i])) {
+      candidate <- paste0("chunk_", auto_index)
       while (candidate %in% defined_names) {
         auto_index <- auto_index + 1
-        candidate <- paste0("unnamed_chunk_", auto_index)
+        candidate <- paste0("chunk_", auto_index)
       }
       chunks[[i]]$name <- candidate
-      defined_names <- c(defined_names, candidate)
-      message_qryflow(paste0(
-        "Chunk ",
-        i,
-        " unnamed. Assigned: '",
-        candidate,
-        "'."
-      ))
+      defined_names[i] <- candidate
+      assigned_name <- TRUE
       auto_index <- auto_index + 1
+      notes <- c(notes, paste0("name '", candidate, "'"))
     }
-  }
 
-  return(chunks)
-}
-
-resolve_chunk_types <- function(chunks, default_type) {
-  registered_types <- ls_qryflow_types()
-
-  for (i in seq_along(chunks)) {
     type <- chunks[[i]]$type
-
-    # Assign default type when none was parsed
     if (is.na(type)) {
       chunks[[i]]$type <- default_type
-      message_qryflow(paste0(
-        "Chunk '",
-        chunks[[i]]$name,
-        "' has no type. ",
-        "Assigned default type '",
-        default_type,
-        "'."
-      ))
-
-      # Warn when type is not a registered handler
+      notes <- c(notes, paste0("default type '", default_type, "'"))
     } else if (!type %in% registered_types) {
       warn_qryflow(paste0(
-        "Chunk '",
+        "'",
         chunks[[i]]$name,
         "' has unrecognised type '",
         type,
-        "'. No handler is currently registered for this type."
+        "'"
+      ))
+    }
+
+    if (length(notes) > 0) {
+      nm <- if (assigned_name) i else paste0("'", defined_names[i], "'")
+      message_qryflow(paste0(
+        "Chunk ",
+        nm,
+        " assigned ",
+        paste(notes, collapse = " and ")
       ))
     }
   }

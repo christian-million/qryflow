@@ -16,11 +16,11 @@ test_that("qryflow_parse() messages when assigning default_type", {
   sql <- "-- @name: my_chunk\nSELECT *\nFROM mtcars;"
   expect_condition(
     qryflow_parse(sql, default_type = "query"),
-    "Chunk 'my_chunk' has no type. Assigned default type 'query'."
+    "Chunk 'my_chunk' assigned default type 'query'"
   )
   expect_condition(
     qryflow_parse(sql, default_type = "exec"),
-    "Chunk 'my_chunk' has no type. Assigned default type 'exec'."
+    "Chunk 'my_chunk' assigned default type 'exec'"
   )
 })
 
@@ -28,7 +28,7 @@ test_that("qryflow_parse() warns when unknown type specified in SQL tag", {
   sql <- "-- @name: my_chunk\n-- @type: unknown\nSELECT *\nFROM mtcars;"
   expect_condition(
     qryflow_parse(sql),
-    "Chunk 'my_chunk' has unrecognised type 'unknown'. No handler is currently registered for this type."
+    "'my_chunk' has unrecognised type 'unknown'"
   )
 })
 
@@ -38,14 +38,14 @@ test_that("qryflow_parse() assigns names", {
   sql <- "SELECT * FROM mtcars;"
   nm <- names(qryflow_parse(sql))
   expect_length(nm, 1)
-  expect_equal(nm, "unnamed_chunk_1")
+  expect_equal(nm, "chunk_1")
 })
 
 test_that("qryflow_parse() assigns unique names", {
-  sql <- "SELECT * FROM mtcars;\n-- @name: unnamed_chunk_1\nSELECT * FROM mtcars;"
+  sql <- "SELECT * FROM mtcars;\n-- @name: chunk_1\nSELECT * FROM mtcars;"
   nm <- names(qryflow_parse(sql))
   expect_length(unique(nm), 2)
-  expect_equal(nm, c('unnamed_chunk_2', 'unnamed_chunk_1'))
+  expect_equal(nm, c('chunk_2', 'chunk_1'))
 })
 
 test_that("qryflow_parse() errors with duplicate user-defined chunk names", {
@@ -57,7 +57,7 @@ test_that("qryflow_parse() messages when assigning names to chunk.", {
   sql <- "SELECT * FROM mtcars;"
   expect_condition(
     qryflow_parse(sql),
-    "Chunk 1 unnamed. Assigned: 'unnamed_chunk_1'."
+    "Chunk 1 assigned name 'chunk_1'"
   )
 })
 

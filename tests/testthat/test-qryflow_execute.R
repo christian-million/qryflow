@@ -75,9 +75,9 @@ test_that("qryflow_execute() warns on_error = 'warn'", {
     )
   )
 
-  expect_equal(wrn[1], "no such table: mtcars")
-  expect_equal(wrn[2], "no such table: mtcars")
-  expect_equal(wrn[3], "no such table: cyl_6")
+  expect_equal(wrn[1], "no such table: mtcars\n")
+  expect_equal(wrn[2], "no such table: mtcars\n")
+  expect_equal(wrn[3], "no such table: cyl_6\n")
 })
 
 
@@ -95,6 +95,6 @@ test_that("qryflow_execute() errors when on_error = 'collect'", {
 
   expect_equal(
     err$message,
-    "3 chunks failed:\n  - prep_cyl_6: no such table: mtcars\n  - df_mtcars: no such table: mtcars\n  - df_cyl_6: no such table: cyl_6"
+    "3 chunks failed:\n  - prep_cyl_6: no such table: mtcars\n  - df_mtcars: no such table: mtcars\n  - df_cyl_6: no such table: cyl_6\n"
   )
 })

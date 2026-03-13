@@ -36,7 +36,7 @@ Defaults to \code{FALSE}. The global default can be set with
 \code{options(qryflow.default_type = TRUE)}.}
 }
 \value{
-(Invisibly) A list representing the evaluated workflow, containing query results, execution metadata,
+A list representing the evaluated workflow, containing query results, execution metadata,
 or both, depending on the contents of the SQL script.
 }
 \description{

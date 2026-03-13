@@ -68,7 +68,7 @@ qryflow_handler_exists <- function(type) {
 #'
 #' @description
 #' This function checks that the passed object is a function and contains
-#' the arguments "chunk", "con, and "..." - in that order. This is to help ensure users
+#' the arguments "con", "chunk", and "..." - in that order. This is to help ensure users
 #' only register valid handlers.
 #'
 #' @param handler object to check

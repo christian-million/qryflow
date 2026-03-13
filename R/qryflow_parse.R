@@ -98,7 +98,7 @@ parse_single_chunk <- function(chunk) {
   } else {
     lines[body_start:length(lines)]
   }
-  sql_txt <- collapse_sql_lines(lines[!is_tag_line(lines)])
+  sql_txt <- collapse_sql_lines(body_lines[!is_tag_line(body_lines)])
 
   list(type = type, name = name, sql = sql_txt, tags = tags)
 }

@@ -88,9 +88,9 @@ qryflow <- function(
 #'   Defaults to `FALSE`. The global default can be set with
 #'   `options(qryflow.verbose = TRUE)`.
 #' @param default_type The default chunk type (defaults to "query"). The global default can be set with
-#'   `options(qryflow.default_type = TRUE)`.
+#'   `options(qryflow.default_type = 'query')`.
 #'
-#' @returns A list representing the evaluated workflow, containing query results, execution metadata,
+#' @returns A `qryflow` object representing the evaluated workflow, containing query results, execution metadata,
 #'   or both, depending on the contents of the SQL script.
 #'
 #' @seealso [`qryflow()`], [`qryflow_results()`], [`qryflow_execute()`], [`qryflow_parse()`]
@@ -150,7 +150,7 @@ qryflow_run_ <- function(con, sql, ..., on_error, verbose, default_type) {
 #' Extract results from a `qryflow_workflow` object
 #'
 #' @description
-#' `qryflow_results()` retrieves the query results from a list returned by [`qryflow_run()`],
+#' `qryflow_results()` retrieves the results from a list returned by [`qryflow_run()`],
 #' typically one that includes parsed and executed SQL chunks.
 #'
 #' @param x Results from [`qryflow_run()`], usually containing a mixture of `qryflow_chunk` objects.
@@ -178,10 +178,10 @@ qryflow_results <- function(x, ..., simplify = FALSE) {
     stop_qryflow("`x` is not an object of class `qryflow`")
   }
 
-  chunk_idx <- vapply(x, function(x) inherits(x, "qryflow_chunk"), logical(1))
+  chunk_idx <- vapply(x, function(c) inherits(c, "qryflow_chunk"), logical(1))
   obj <- x[chunk_idx]
 
-  res <- lapply(obj, function(x) x$results)
+  res <- lapply(obj, function(c) c$results)
 
   if (simplify && length(res) == 1) {
     res <- res[[1]]

@@ -62,7 +62,9 @@ read_sql_lines.character <- function(x) {
     lines <- readLines(x)
   } else {
     # Handles lines (character vector > 1) the same as a single character vector
-    lines <- readLines(textConnection(x))
+    tc <- textConnection(x)
+    on.exit(close(tc))
+    lines <- readLines(tc)
   }
 
   # Removes leading whitespace to avoid it chunking

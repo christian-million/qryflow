@@ -1,6 +1,6 @@
 # Extract results from a `qryflow_workflow` object
 
-`qryflow_results()` retrieves the query results from a list returned by
+`qryflow_results()` retrieves the results from a list returned by
 [`qryflow_run()`](https://christian-million.github.io/qryflow/reference/qryflow_run.md),
 typically one that includes parsed and executed SQL chunks.
 

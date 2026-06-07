@@ -1,6 +1,7 @@
 # Getting Started with qryflow
 
 ``` r
+
 library(qryflow)
 ```
 
@@ -30,6 +31,7 @@ be a character vector, like in the example below, or a filepath to a
 file that contains SQL.
 
 ``` r
+
 # Connection to In-Memory DB with table populated from mtcars
 con <- example_db_connect(mtcars)
 
@@ -190,6 +192,7 @@ The `on_error` argument controls what happens when a single chunk fails:
   a single combined error at the end.
 
 ``` r
+
 # on_error = "stop" (default): halts on first failure
 bad_sql <- "
 -- @exec: prep_cyl_6
@@ -208,6 +211,7 @@ qryflow(con, bad_sql, on_error = "stop")
 ```
 
 ``` r
+
 # Warn collects errors and signals a warning
 qryflow(con, bad_sql, on_error = "warn")
 #> Warning: table cyl_6 already exists
@@ -255,6 +259,7 @@ qryflow(con, bad_sql, on_error = "warn")
 ```
 
 ``` r
+
 # on_error = "collect": runs everything, then reports all failures together
 qryflow(con, bad_sql, verbose = TRUE, on_error = "collect")
 #> Running 3 chunks
@@ -264,7 +269,7 @@ qryflow(con, bad_sql, verbose = TRUE, on_error = "collect")
 #>       ✗ error    0s
 #> [3/3] df_mtcars [query]
 #>       ✓ success  0s
-#> Done in 0s — 0 success, 0 error, 0 skipped
+#> Done in 0s — 1 success, 2 error, 0 skipped
 #> Error:
 #> ! 2 chunks failed:
 #>   - prep_cyl_6: table cyl_6 already exists
@@ -285,6 +290,7 @@ will return a single object (as opposed to a named list of results). For
 example:
 
 ``` r
+
 sql1 <- "
 -- @query: df_mtcars
 SELECT *
@@ -351,6 +357,7 @@ performs parsing *and* execution, returning a full `qryflow` object -
 including all chunk metadata, not just the query results.
 
 ``` r
+
 obj <- qryflow_run(con, sql)
 
 # A qryflow object
@@ -373,6 +380,7 @@ obj # Print Method
 Each element is a `qryflow_chunk`:
 
 ``` r
+
 class(obj$df_cyl_6)
 #> [1] "qryflow_chunk"
 
@@ -391,6 +399,7 @@ returns), use
 [`qryflow_results()`](https://christian-million.github.io/qryflow/reference/qryflow_results.md):
 
 ``` r
+
 results <- qryflow_results(obj)
 class(results$df_cyl_6)
 #> [1] "data.frame"
@@ -409,6 +418,7 @@ head(results$df_cyl_6)
 For even more control, you can parse and execute separately:
 
 ``` r
+
 # Step 1: Parse the SQL into structured chunks
 filepath <- example_sql_path()
 workflow <- qryflow_parse(filepath)
@@ -438,6 +448,7 @@ Each `qryflow_chunk` contains:
 - `$results`: `NULL` before execution; populated after
 
 ``` r
+
 # Step 2: Execute the parsed workflow
 executed <- qryflow_execute(con, workflow)
 
@@ -464,57 +475,53 @@ this information with the
 function:
 
 ``` r
+
 qryflow_meta(executed) # The whole workflow
 #> $source
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n\n-- @exec: prep_cyl_6\nCREATE TABLE cyl_6 AS\nSELECT *\nFROM mtcars\nWHERE cyl = 6;\n\n-- @query: df_mtcars\nSELECT *\nFROM mtcars;\n\n-- @query: df_cyl_6\nSELECT *\nFROM cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-13 04:25:24 UTC"
+#> [1] "2026-06-07 23:00:20 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-13 04:25:24 UTC"
+#> [1] "2026-06-07 23:00:20 UTC"
 #> 
 #> $duration
-#> [1] 0.002127171
+#> [1] 0.002069235
 #> 
 #> $status
 #> [1] "success"
-#> 
-#> $error_msg
-#> NULL
 ```
 
 ``` r
+
 qryflow_meta(executed[[1]]) # The whole chunk
 #> $source
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-13 04:25:24 UTC"
+#> [1] "2026-06-07 23:00:20 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-13 04:25:24 UTC"
+#> [1] "2026-06-07 23:00:20 UTC"
 #> 
 #> $duration
-#> [1] 0.000528574
+#> [1] 0.000521183
 #> 
 #> $status
 #> [1] "success"
-#> 
-#> $error_msg
-#> NULL
 ```
 
 ## Summary
 
-| Function                                                                                        | What it does                                                       |
-|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| [`qryflow()`](https://christian-million.github.io/qryflow/reference/qryflow.md)                 | Parse + execute + return query results.                            |
-| [`qryflow_run()`](https://christian-million.github.io/qryflow/reference/qryflow_run.md)         | Parse + execute, returning a full `qryflow` object with metadata.  |
-| [`qryflow_results()`](https://christian-million.github.io/qryflow/reference/qryflow_results.md) | Extract query results from a `qryflow` object.                     |
-| [`qryflow_parse()`](https://christian-million.github.io/qryflow/reference/qryflow_parse.md)     | Parse SQL into structured `qryflow` object - No execution.         |
-| [`qryflow_execute()`](https://christian-million.github.io/qryflow/reference/qryflow_execute.md) | Execute a parsed `qryflow` object against a connection.            |
-| [`qryflow_meta()`](https://christian-million.github.io/qryflow/reference/qryflow_meta.md)       | Access metadata (status, duration, timing) on a workflow or chunk. |
+| Function | What it does |
+|----|----|
+| [`qryflow()`](https://christian-million.github.io/qryflow/reference/qryflow.md) | Parse + execute + return query results. |
+| [`qryflow_run()`](https://christian-million.github.io/qryflow/reference/qryflow_run.md) | Parse + execute, returning a full `qryflow` object with metadata. |
+| [`qryflow_results()`](https://christian-million.github.io/qryflow/reference/qryflow_results.md) | Extract query results from a `qryflow` object. |
+| [`qryflow_parse()`](https://christian-million.github.io/qryflow/reference/qryflow_parse.md) | Parse SQL into structured `qryflow` object - No execution. |
+| [`qryflow_execute()`](https://christian-million.github.io/qryflow/reference/qryflow_execute.md) | Execute a parsed `qryflow` object against a connection. |
+| [`qryflow_meta()`](https://christian-million.github.io/qryflow/reference/qryflow_meta.md) | Access metadata (status, duration, timing) on a workflow or chunk. |
 
 For a guide on registering custom chunk types and extending `qryflow`’s
 behaviour, see

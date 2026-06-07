@@ -1,6 +1,7 @@
 # Extending qryflow Functionality
 
 ``` r
+
 library(qryflow)
 ```
 
@@ -44,6 +45,7 @@ They should execute the SQL as appropriate and then return the result:
 This is the handler for the “exec” type:
 
 ``` r
+
 qryflow_exec_handler <- function(con, chunk, ...) {
   
   # Pass the SQL of the chunk to desired execution strategy
@@ -71,6 +73,7 @@ occur if:
 - The formal arguments are not in the right order
 
 ``` r
+
 validate_qryflow_handler(qryflow_exec_handler)
 ```
 
@@ -86,6 +89,7 @@ When the package is loaded, default types like “`query`” and “`exec`”
 are automatically registered. You can register additional types using:
 
 ``` r
+
 register_qryflow_type("custom", my_custom_handler_func, overwrite = TRUE)
 ```
 
@@ -95,6 +99,7 @@ environment.
 We can access what types are registered:
 
 ``` r
+
 ls_qryflow_types()
 ```
 
@@ -114,6 +119,7 @@ instead of
 First, create the handler:
 
 ``` r
+
 query_send_handler <- function(con, chunk, ...) {
   res <- DBI::dbSendQuery(con, chunk$sql, ...)
 
@@ -128,12 +134,14 @@ query_send_handler <- function(con, chunk, ...) {
 Validate it by hand, if you’d like:
 
 ``` r
+
 validate_qryflow_handler(query_send_handler)
 ```
 
 Then, register it:
 
 ``` r
+
 register_qryflow_type(
   "query-send",
   handler = query_send_handler,
@@ -145,6 +153,7 @@ register_qryflow_type(
 Check that it registered properly:
 
 ``` r
+
 ls_qryflow_types()
 #> [1] "exec"       "query"      "query-send"
 ```
@@ -152,6 +161,7 @@ ls_qryflow_types()
 And test it out on some SQL:
 
 ``` r
+
 # Creates an in-memory sqlite database and populates it with an mtcars table, named "mtcars"
 con <- example_db_connect(mtcars)
 

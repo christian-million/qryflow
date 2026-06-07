@@ -19,12 +19,14 @@ You can install the released version of `qryflow` from
 [CRAN](https://cran.r-project.org/) with:
 
 ``` r
+
 install.packages("qryflow")
 ```
 
 And the development version from GitHub with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("christian-million/qryflow")
 ```
@@ -34,6 +36,7 @@ devtools::install_github("christian-million/qryflow")
 Basic Usage:
 
 ``` r
+
 library(qryflow)
 
 # Connection to In-Memory DB with table populated from mtcars
@@ -85,6 +88,7 @@ head(results$df_cyl_6)
 The path to a file containing SQL can also be passed:
 
 ``` r
+
 filepath <- example_sql_path('mtcars.sql')
 
 # Pass tagged SQL to `qryflow`

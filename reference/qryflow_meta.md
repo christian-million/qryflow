@@ -67,38 +67,32 @@ qryflow_meta(results)
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n\n-- @exec: prep_cyl_6\nCREATE TABLE cyl_6 AS\nSELECT *\nFROM mtcars\nWHERE cyl = 6;\n\n-- @query: df_mtcars\nSELECT *\nFROM mtcars;\n\n-- @query: df_cyl_6\nSELECT *\nFROM cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-13 04:25:18 UTC"
+#> [1] "2026-06-07 23:00:14 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-13 04:25:18 UTC"
+#> [1] "2026-06-07 23:00:14 UTC"
 #> 
 #> $duration
-#> [1] 0.001671553
+#> [1] 0.00165987
 #> 
 #> $status
 #> [1] "success"
-#> 
-#> $error_msg
-#> NULL
 #> 
 qryflow_meta(results[[1]])
 #> $source
 #> [1] "-- @exec: drop_cyl_6\nDROP TABLE IF EXISTS cyl_6;\n"
 #> 
 #> $start_time
-#> [1] "2026-03-13 04:25:18 UTC"
+#> [1] "2026-06-07 23:00:14 UTC"
 #> 
 #> $end_time
-#> [1] "2026-03-13 04:25:18 UTC"
+#> [1] "2026-06-07 23:00:14 UTC"
 #> 
 #> $duration
-#> [1] 0.0002920628
+#> [1] 0.0002779961
 #> 
 #> $status
 #> [1] "success"
-#> 
-#> $error_msg
-#> NULL
 #> 
 
 DBI::dbDisconnect(con)

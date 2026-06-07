@@ -18,7 +18,7 @@ query chunk is present. Defaults to \code{FALSE}.}
 A named list of query results, or a single result object if \code{simplify = TRUE} and only one result is present.
 }
 \description{
-\code{qryflow_results()} retrieves the query results from a list returned by \code{\link[=qryflow_run]{qryflow_run()}},
+\code{qryflow_results()} retrieves the results from a list returned by \code{\link[=qryflow_run]{qryflow_run()}},
 typically one that includes parsed and executed SQL chunks.
 }
 \examples{

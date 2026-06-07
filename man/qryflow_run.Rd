@@ -33,10 +33,10 @@ Defaults to \code{FALSE}. The global default can be set with
 \code{options(qryflow.verbose = TRUE)}.}
 
 \item{default_type}{The default chunk type (defaults to "query"). The global default can be set with
-\code{options(qryflow.default_type = TRUE)}.}
+\code{options(qryflow.default_type = 'query')}.}
 }
 \value{
-A list representing the evaluated workflow, containing query results, execution metadata,
+A \code{qryflow} object representing the evaluated workflow, containing query results, execution metadata,
 or both, depending on the contents of the SQL script.
 }
 \description{

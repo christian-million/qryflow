@@ -65,7 +65,6 @@ qryflow_execute <- function(
   wf_start <- meta_time()
   report_workflow_start(n = n, verbose = verbose)
 
-  # Avoiding copy-on-modify, by not assigning directly to `qryflow`
   for (i in seq_along(x)) {
     nm <- chunk_names[i]
     chunk <- x[[nm]]
@@ -109,12 +108,23 @@ qryflow_execute <- function(
       start_time = m$start_time,
       end_time = m$end_time,
       duration = m$duration,
-      status = m$status
+      status = m$status,
+      error_msg = m$error_msg
     )
     x[[nm]]$results <- chunk_results[[nm]]
   }
 
   wf_end <- meta_time()
+
+  all_errors <- vapply(
+    chunk_meta,
+    \(m) if (is.null(m$error_msg)) NA_character_ else m$error_msg,
+    character(1)
+  )
+  wf_error_msgs <- all_errors[!is.na(all_errors)]
+  if (length(wf_error_msgs) == 0) {
+    wf_error_msgs <- NULL
+  }
 
   all_statuses <- vapply(
     chunk_meta,
@@ -133,7 +143,8 @@ qryflow_execute <- function(
     start_time = wf_start,
     end_time = wf_end,
     duration = meta_duration(wf_start, wf_end),
-    status = wf_status
+    status = wf_status,
+    error_msg = wf_error_msgs
   )
 
   report_workflow_end(x = out, verbose = verbose)

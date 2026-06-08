@@ -1,4 +1,4 @@
-# qryflow (development version)
+# qryflow 0.4.0
 
 ## Breaking Changes
 

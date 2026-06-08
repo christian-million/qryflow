@@ -72,7 +72,7 @@ results <- qryflow(con, sql, verbose = TRUE)
 #>       ✓ success  0s
 #> [4/4] df_cyl_6 [query]
 #>       ✓ success  0s
-#> Done in 0.01s — 4 success, 0 error, 0 skipped
+#> Done in 0s — 4 success, 0 error, 0 skipped
 
 # Access the results from the chunk named `df_cyl_6`
 head(results$df_cyl_6)
@@ -102,7 +102,7 @@ results <- qryflow(con, filepath, verbose = TRUE)
 #>       ✓ success  0s
 #> [4/4] df_cyl_6 [query]
 #>       ✓ success  0s
-#> Done in 0.01s — 4 success, 0 error, 0 skipped
+#> Done in 0s — 4 success, 0 error, 0 skipped
 
 # Access the results from the chunk named `df_cyl_6`
 head(results$df_cyl_6)

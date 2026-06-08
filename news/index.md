@@ -1,6 +1,8 @@
 # Changelog
 
-## qryflow (development version)
+## qryflow 0.4.0
+
+CRAN release: 2026-06-07
 
 ### Breaking Changes
 
